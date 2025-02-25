@@ -1,0 +1,109 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ '**' ]
+    tags:
+      - '*'
+  pull_request:
+    branches: [ 'master', 'develop' ]
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: nsoft
+    steps:
+      - name: Checkout Branch ${{ github.ref }}
+        uses: actions/checkout@v4
+
+      - name: Make gradlew Executable
+        run: chmod +x ./gradlew
+
+      - name: Decode Keystore and Create key.properties
+        env:
+          ENCODED_STRING: ${{ secrets.KEYSTORE }}
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.STOREPASSWORD }}
+          RELEASE_KEYSTORE_ALIAS: ${{ secrets.KEYALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.KEYPASSWORD }}
+        run: |
+          touch app/signing-key.jks
+          echo -n "$ENCODED_STRING" | base64 -d > app/signing-key.jks
+          mkdir android
+          touch android/key.properties
+          echo "storePassword=$RELEASE_KEYSTORE_PASSWORD" > android/key.properties
+          echo "keyPassword=$RELEASE_KEY_PASSWORD" >> android/key.properties
+          echo "keyAlias=$RELEASE_KEYSTORE_ALIAS" >> android/key.properties
+          echo "storeFile=signing-key.jks" >> android/key.properties
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+          cache: gradle
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            app/build
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Build and Run Tests
+        run:  |
+          ./gradlew build test
+
+      - name: Build Debug APK
+        env:
+          ENCODED_STRING: ${{ secrets.KEYSTORE }}
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.STOREPASSWORD }}
+          RELEASE_KEYSTORE_ALIAS: ${{ secrets.KEYALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.KEYPASSWORD }}
+        run:  |
+          ./gradlew assembleDebug --info --stacktrace
+          echo "Searching for debug APKs..."
+          apk_files=$(find app/build/outputs/apk -name '*debug*.apk' 2>/dev/null || true)
+          if [ -z "$apk_files" ]; then
+            echo "No debug APKs found."
+          else
+            echo "Found debug APKs:"
+            echo "$apk_files"
+          fi
+
+      - name: Build Release APK
+        env:
+          ENCODED_STRING: ${{ secrets.KEYSTORE }}
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.STOREPASSWORD }}
+          RELEASE_KEYSTORE_ALIAS: ${{ secrets.KEYALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.KEYPASSWORD }}
+        run:  |
+          ./gradlew assembleRelease --info --stacktrace
+          echo "Searching for release APKs..."
+          apk_files=$(find app/build/outputs/apk -name '*release*.apk' 2>/dev/null || true)
+          if [ -z "$apk_files" ]; then
+            echo "No release APKs found."
+          else
+            echo "Found release APKs:"
+            echo "$apk_files"
+          fi
+
+      - name: Get built apk paths and reports
+        id: releaseApk
+        run: | 
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          mkdir upload
+          find app/build/outputs/apk -name '*debug*.apk' -exec mv {} ./upload \;
+          find app/build/outputs/apk -name '*release*.apk' -exec mv {} ./upload \;
+          mv app/build/reports ./upload
+          mv app/build/test-results ./upload
+
+      - name: Upload All Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nsoft-app-${{ steps.releaseApk.outputs.sha_short }}
+          path: ./upload
