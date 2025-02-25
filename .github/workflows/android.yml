@@ -17,6 +17,9 @@ jobs:
       - name: Checkout Branch ${{ github.ref }}
         uses: actions/checkout@v4
 
+      - name: Make gradlew Executable
+        run: chmod +x ./gradlew
+
       - name: Decode Keystore and Create key.properties
         env:
           ENCODED_STRING: ${{ secrets.KEYSTORE }}
