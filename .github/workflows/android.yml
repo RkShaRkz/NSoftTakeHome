@@ -14,6 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: nsoft
     steps:
+      - name: Checkout Branch ${{ github.ref }}
+        uses: actions/checkout@v4
+
       - name: Decode Keystore and Create key.properties
         env:
           ENCODED_STRING: ${{ secrets.KEYSTORE }}
@@ -21,7 +24,6 @@ jobs:
           RELEASE_KEYSTORE_ALIAS: ${{ secrets.KEYALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.KEYPASSWORD }}
         run: |
-          mkdir app
           touch app/signing-key.jks
           echo -n "$ENCODED_STRING" | base64 -d > app/signing-key.jks
           mkdir android
