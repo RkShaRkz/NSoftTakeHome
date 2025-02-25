@@ -40,21 +40,21 @@ jobs:
           java-version: 17
           cache: gradle
 
-      - name: Build Release APK
-        env:
-          ENCODED_STRING: ${{ secrets.KEYSTORE }}
-          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PW }}
-          RELEASE_KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
-          RELEASE_KEY_PASSWORD: ${{ secrets.KEY_PW }}
-        run: ./gradlew assembleRelease --info --stacktrace
-
       - name: Build Debug APK
         env:
           ENCODED_STRING: ${{ secrets.KEYSTORE }}
-          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PW }}
-          RELEASE_KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
-          RELEASE_KEY_PASSWORD: ${{ secrets.KEY_PW }}
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.STOREPASSWORD }}
+          RELEASE_KEYSTORE_ALIAS: ${{ secrets.KEYALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.KEYPASSWORD }}
         run: ./gradlew assembleDebug --info --stacktrace
+
+      - name: Build Release APK
+        env:
+          ENCODED_STRING: ${{ secrets.KEYSTORE }}
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.STOREPASSWORD }}
+          RELEASE_KEYSTORE_ALIAS: ${{ secrets.KEYALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.KEYPASSWORD }}
+        run: ./gradlew assembleRelease --info --stacktrace
 
       - name: Get built apk paths and reports
         id: releaseApk
