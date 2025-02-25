@@ -245,6 +245,9 @@ dependencies {
     // Timber
     implementation(libs.timber)
 
+    // Backported java.time features to lower APIs
+    implementation(libs.threetenabp)
+
     // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
