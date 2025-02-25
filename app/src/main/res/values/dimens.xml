@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- universal sizes for margins and text -->
+    <dimen name="margin_half">4dp</dimen>
+    <dimen name="margin_single">8dp</dimen>
+    <dimen name="margin_double">16dp</dimen>
+    <dimen name="margin_double_and_half">20dp</dimen>
+    <dimen name="margin_triple">24dp</dimen>
+    <dimen name="margin_quad">32dp</dimen>
+    <dimen name="margin_64">64dp</dimen>
+
+    <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_normal">14sp</dimen>
+    <dimen name="text_size_large">16sp</dimen>
+    <dimen name="text_size_xlarge">18sp</dimen>
+
+    <!-- for everything else, we will use the <WHERE>_<WHAT>_<WHICHSIZE> nomenclature -->
+
+</resources>

@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">NSoft GitHub App</string>
+    <!-- the generic error messages -->
+    <string name="ok">OK</string>
+    <string name="no_internet_available">No internet available!</string>
+    <string name="whoops_something_went_wrong">Whoops, something went wrong!</string>
+</resources>

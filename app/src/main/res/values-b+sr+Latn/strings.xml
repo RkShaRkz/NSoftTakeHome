@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">NSoft GitHub Aplikacija</string>
+    <!-- the generic error messages -->
+    <string name="ok">U redu</string>
+    <string name="no_internet_available">Internet nije dostupan!</string>
+    <string name="whoops_something_went_wrong">Opa, nešto je pošlo po zlu i desilo se ono što nije trebalo - nešto se skršilo!</string>
+</resources>
