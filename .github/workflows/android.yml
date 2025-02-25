@@ -1,0 +1,69 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ 'master', 'rel/**' ]
+    tags:
+      - '*'
+  pull_request:
+    branches: [ 'master' ]
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: nsoft
+    steps:
+      - name: Decode Keystore and Create key.properties
+        env:
+          ENCODED_STRING: ${{ secrets.KEYSTORE }}
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.STOREPASSWORD }}
+          RELEASE_KEYSTORE_ALIAS: ${{ secrets.KEYALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.KEYPASSWORD }}
+        run: |
+          echo -n "$ENCODED_STRING" | base64 -d > app/signing-key.jks
+          mkdir android
+          touch android/key.properties
+          echo "storePassword=$RELEASE_KEYSTORE_PASSWORD" > android/key.properties
+          echo "keyPassword=$RELEASE_KEY_PASSWORD" >> android/key.properties
+          echo "keyAlias=$RELEASE_KEYSTORE_ALIAS" >> android/key.properties
+          echo "storeFile=signing-key.jks" >> android/key.properties
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+          cache: gradle
+
+      - name: Build Release APK
+        env:
+          ENCODED_STRING: ${{ secrets.KEYSTORE }}
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PW }}
+          RELEASE_KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.KEY_PW }}
+        run: ./gradlew assembleRelease --info --stacktrace
+
+      - name: Build Debug APK
+        env:
+          ENCODED_STRING: ${{ secrets.KEYSTORE }}
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PW }}
+          RELEASE_KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.KEY_PW }}
+        run: ./gradlew assembleDebug --info --stacktrace
+
+      - name: Get built apk paths and reports
+        id: releaseApk
+        run: | 
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          mkdir upload
+          mv app/build/outputs/apk/**/debug/*debug*.apk ./upload
+          mv app/build/outputs/apk/**/release/*release*.apk ./upload
+          mv app/build/reports ./upload
+          mv app/build/test-results ./upload
+
+      - name: Upload All Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nsoft-app-${{ steps.releaseApk.outputs.sha_short }}
+          path: ./upload
