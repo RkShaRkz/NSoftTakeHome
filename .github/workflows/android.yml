@@ -49,7 +49,16 @@ jobs:
           RELEASE_KEYSTORE_PASSWORD: ${{ secrets.STOREPASSWORD }}
           RELEASE_KEYSTORE_ALIAS: ${{ secrets.KEYALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.KEYPASSWORD }}
-        run: ./gradlew assembleDebug --info --stacktrace
+        run:  |
+          ./gradlew assembleDebug --info --stacktrace
+          echo "Searching for debug APKs..."
+          apk_files=$(find app/build/outputs/apk -name '*debug*.apk' 2>/dev/null || true)
+          if [ -z "$apk_files" ]; then
+            echo "No debug APKs found."
+          else
+            echo "Found debug APKs:"
+            echo "$apk_files"
+          fi
 
       - name: Build Release APK
         env:
@@ -57,15 +66,24 @@ jobs:
           RELEASE_KEYSTORE_PASSWORD: ${{ secrets.STOREPASSWORD }}
           RELEASE_KEYSTORE_ALIAS: ${{ secrets.KEYALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.KEYPASSWORD }}
-        run: ./gradlew assembleRelease --info --stacktrace
+        run:  |
+          ./gradlew assembleRelease --info --stacktrace
+          echo "Searching for release APKs..."
+          apk_files=$(find app/build/outputs/apk -name '*release*.apk' 2>/dev/null || true)
+          if [ -z "$apk_files" ]; then
+            echo "No release APKs found."
+          else
+            echo "Found release APKs:"
+            echo "$apk_files"
+          fi
 
       - name: Get built apk paths and reports
         id: releaseApk
         run: | 
           echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
           mkdir upload
-          mv app/build/outputs/apk/**/debug/*debug*.apk ./upload
-          mv app/build/outputs/apk/**/release/*release*.apk ./upload
+          find app/build/outputs/apk -name '*debug*.apk' -exec mv {} ./upload \;
+          find app/build/outputs/apk -name '*release*.apk' -exec mv {} ./upload \;
           mv app/build/reports ./upload
           mv app/build/test-results ./upload
 
