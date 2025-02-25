@@ -21,6 +21,7 @@ jobs:
           RELEASE_KEYSTORE_ALIAS: ${{ secrets.KEYALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.KEYPASSWORD }}
         run: |
+          mkdir app
           touch app/signing-key.jks
           echo -n "$ENCODED_STRING" | base64 -d > app/signing-key.jks
           mkdir android
