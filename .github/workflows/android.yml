@@ -2,11 +2,11 @@ name: Android CI
 
 on:
   push:
-    branches: [ 'master', 'rel/**' ]
+    branches: [ 'master', 'develop', 'rel/**' ]
     tags:
       - '*'
   pull_request:
-    branches: [ 'master' ]
+    branches: [ 'master', 'develop' ]
 
 
 jobs:
@@ -51,10 +51,12 @@ jobs:
              ~/.gradle/wrapper
              app/build
            key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+           restore-keys: |
+             gradle-${{ runner.os }}-
 
-      - name: Run Tests
+      - name: Build and Run Tests
         run:  |
-          ./gradlew test
+          ./gradlew build test
 
       - name: Build Debug APK
         env:
