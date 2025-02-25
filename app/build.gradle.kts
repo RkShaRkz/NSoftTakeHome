@@ -42,7 +42,7 @@ android {
             storeFile =
                 keystoreProperties["storeFile"]?.let {
                     // It's already a file, so just return it
-                    return@let it as File
+                    return@let file(it)
                 }
             storePassword = keystoreProperties["storePassword"] as String
         }
