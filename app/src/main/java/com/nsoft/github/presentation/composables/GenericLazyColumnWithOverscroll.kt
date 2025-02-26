@@ -1,9 +1,12 @@
 package com.nsoft.github.presentation.composables
 
+import androidx.annotation.NonNull
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,9 +14,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.Dp
 
 // Helper extension to check if we're at the end
 fun LazyListState.isAtEnd(): Boolean {
@@ -28,12 +33,19 @@ fun LazyListState.isAtEnd(): Boolean {
  * @param onOverScrollCallback callback to be invoked when the list is overscrolled
  * @param itemsList list of items to display, of type [Type]
  * @param itemComposable a composable to use for the item itself
+ * @param modifier the [Modifier] to apply, if any
+ * @param useDivider whether we should use a [HorizontalDivider] between list items
+ * @param dividerThickness the divider thickness to use. Defaults to [Dp.Hairline]
  */
 @Composable
 fun <Type> GenericLazyColumnWithOverscroll(
-    onOverScrollCallback: () -> Unit,
-    itemsList: List<Type>,
-    itemComposable: @Composable (Int, Type) -> Unit
+    @NonNull onOverScrollCallback: () -> Unit,
+    @NonNull itemsList: List<Type>,
+    @NonNull itemComposable: @Composable (Int, Type) -> Unit,
+    @NonNull modifier: Modifier = Modifier,
+    useDivider: Boolean = false,
+    dividerThickness: Dp = Dp.Hairline,
+    dividerColor: Color = Color.Transparent
 ) {
     val lazyListState = rememberLazyListState()
     var isOverscrolling by remember { mutableStateOf(false) }
@@ -58,11 +70,20 @@ fun <Type> GenericLazyColumnWithOverscroll(
     }
 
     LazyColumn(
-        modifier = Modifier.nestedScroll(nestedScrollConnection),
+        modifier = Modifier
+            .nestedScroll(nestedScrollConnection)
+            .then(modifier),
         state = lazyListState
     ) {
         itemsIndexed(itemsList) { index, item ->
             itemComposable(index, item)
+            if (useDivider) {
+                HorizontalDivider(
+                    color = dividerColor,
+                    thickness = dividerThickness,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 }
