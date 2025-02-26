@@ -19,7 +19,6 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.Dp
-import com.nsoft.github.util.MyLogger
 
 // Helper extension to check if we're at the end
 fun LazyListState.isAtEnd(): Boolean {
