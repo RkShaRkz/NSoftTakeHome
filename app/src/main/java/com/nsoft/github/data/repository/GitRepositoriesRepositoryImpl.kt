@@ -64,4 +64,14 @@ class GitRepositoriesRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override fun addRepositories(repoList: List<GitRepository>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            addRepositoriesSuspend(repoList)
+        }
+    }
+
+    override suspend fun addRepositoriesSuspend(repoList: List<GitRepository>) {
+        gitRepositoryDao.insertAll(repoList)
+    }
 }

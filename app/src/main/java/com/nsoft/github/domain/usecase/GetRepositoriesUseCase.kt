@@ -6,6 +6,7 @@ import com.nsoft.github.data.remote.params.get_repositories.GetRepositoriesReque
 import com.nsoft.github.domain.Outcome
 import com.nsoft.github.domain.exception.ApiException
 import com.nsoft.github.domain.model.GitRepositoriesList
+import com.nsoft.github.domain.repository.GitRepositoriesRepository
 import com.nsoft.github.domain.usecase.params.GetRepositoriesUseCaseParams
 import com.nsoft.github.util.MyLogger
 import javax.inject.Inject
@@ -14,7 +15,7 @@ import javax.inject.Named
 class GetRepositoriesUseCase @Inject constructor(
 @Named(ApiCalls.SEARCH_REPOSITORIES)
     apiCall: ApiCall<GetRepositoriesRequestParams, GitRepositoriesList>,
-    //TODO add repos here
+    val gitRepositoriesRepository: GitRepositoriesRepository
 ): NetworkingUseCase<GetRepositoriesUseCaseParams, GetRepositoriesRequestParams, GitRepositoriesList, ApiException>(apiCall) {
 
     override fun provideParams(params: GetRepositoriesUseCaseParams): GetRepositoriesRequestParams {
@@ -32,6 +33,7 @@ class GetRepositoriesUseCase @Inject constructor(
         result: GitRepositoriesList,
         rawJson: String
     ): Outcome<GitRepositoriesList, ApiException> {
+        gitRepositoriesRepository.addRepositories(result.items)
         return Outcome.successfulOutcome(result)
     }
 

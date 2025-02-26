@@ -16,4 +16,8 @@ interface GitRepositoriesRepository {
     fun setRepositoryFavorited(gitRepository: GitRepository, newFavoriteStatus: Boolean)
 
     suspend fun setRepositoryFavoritedSuspend(gitRepository: GitRepository, newFavoriteStatus: Boolean)
+
+    fun addRepositories(repoList: List<GitRepository>)
+
+    suspend fun addRepositoriesSuspend(repoList: List<GitRepository>)
 }
