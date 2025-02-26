@@ -52,7 +52,7 @@ abstract class BaseViewModel<NavigationEventClass, ErrorStateClass>: ViewModel()
      * **NOTE**: Default implementation just returns [initialNavigationStreamValue] here,
      * you might want to override this behaviour
      */
-    fun doneNavigating() {
+    open fun doneNavigating() {
         _navigationStream.value = initialNavigationStreamValue()
     }
 
