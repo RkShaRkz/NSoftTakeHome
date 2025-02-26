@@ -1,10 +1,15 @@
 package com.nsoft.github.presentation.ui
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -12,6 +17,8 @@ import com.nsoft.github.R
 import com.nsoft.github.domain.model.FirstScreenErrorState
 import com.nsoft.github.domain.navigation.FirstScreenNavigationEvent
 import com.nsoft.github.domain.navigation.NavigationRoutes
+import com.nsoft.github.presentation.composables.GenericLazyColumnWithOverscroll
+import com.nsoft.github.presentation.composables.GitRepoView
 import com.nsoft.github.presentation.composables.ShowAlertDialog
 import com.nsoft.github.presentation.viewmodel.FirstScreenViewModel
 import com.nsoft.github.util.MyLogger
@@ -27,7 +34,7 @@ fun FirstScreen(navController: NavHostController) {
     val errorEvent by presenter.errorStream.collectAsState()
 
     // Start listening to viewmodel streams
-    val repos by presenter.repositoryListStream.observeAsState()
+    val repos by presenter.repositoryListStream.observeAsState(emptyList())
 
     // Handle navigation events
     HandleNavigationEvents(navigationEvents, navController, presenter)
@@ -35,6 +42,31 @@ fun FirstScreen(navController: NavHostController) {
 
     // Tell the presenter to fetch the repos
     presenter.getRepositories()
+
+    // And now, the UI code
+    GenericLazyColumnWithOverscroll(
+        onOverScrollCallback = { presenter.fetchNextPage() },
+        itemsList = repos,
+        itemComposable = { index, gitRepo ->
+            GitRepoView(
+                useExtendedView = false,
+                gitRepoToShow = gitRepo,
+                modifier = Modifier,
+                favoritesButtonClick = { MyLogger.d("SHARK", "add repo ${gitRepo} to favorites") },
+                favoritesButtonComposable = {
+                    //TODO make the text change depending on whats in the repo
+                    Text("Add to Favorites")
+                },
+                openUrlButtonClick = {
+                    // Nothing, not only is this part of the "extended" view, but it's not a feature of the first screen
+                }
+            )
+        },
+        modifier = Modifier,
+        useDivider = true,
+        dividerThickness = dimensionResource(R.dimen.margin_single),
+        dividerColor = Color.Black
+    )
 }
 
 
