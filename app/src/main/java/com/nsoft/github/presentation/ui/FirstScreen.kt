@@ -35,7 +35,6 @@ fun FirstScreen(navController: NavHostController) {
 
     // Tell the presenter to fetch the repos
     presenter.getRepositories()
-    MyLogger.wtf("SHARK", "repos in FirstScreen: ${repos}")
 }
 
 

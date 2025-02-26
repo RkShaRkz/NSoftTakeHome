@@ -43,7 +43,4 @@ class GetRepositoriesResponseAdapter @Inject constructor(
 
         return GitRepositoriesList(repoList.toList())
     }
-
-
-
 }

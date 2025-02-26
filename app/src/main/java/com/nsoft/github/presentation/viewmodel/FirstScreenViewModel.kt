@@ -19,6 +19,8 @@ class FirstScreenViewModel @Inject constructor(
     private val getRepositoriesUseCase: GetRepositoriesUseCase
 ): BaseViewModel<FirstScreenNavigationEvent, FirstScreenErrorState>() {
 
+    private var nextPageToFetch = 1
+
     override fun initialNavigationStreamValue() = FirstScreenNavigationEvent.NOWHERE
     override fun initialErrorStreamValue() = FirstScreenErrorState.NoError
 
@@ -29,7 +31,7 @@ class FirstScreenViewModel @Inject constructor(
         viewModelScope.launch {
             getRepositoriesUseCase.executeSuspendWithCallback(
                 GetRepositoriesUseCaseParams(
-                    page = 1
+                    page = nextPageToFetch
                 )
             ) { result ->
                 if (result.isSuccessful()) {

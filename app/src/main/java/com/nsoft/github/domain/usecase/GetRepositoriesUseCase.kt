@@ -32,7 +32,6 @@ class GetRepositoriesUseCase @Inject constructor(
         result: GitRepositoriesList,
         rawJson: String
     ): Outcome<GitRepositoriesList, ApiException> {
-        MyLogger.d("SHARK", "onSuccess()\tresult: ${result}")
         return Outcome.successfulOutcome(result)
     }
 
@@ -41,7 +40,6 @@ class GetRepositoriesUseCase @Inject constructor(
         responseCode: Int,
         errorBody: String?
     ): Outcome<GitRepositoriesList, ApiException> {
-        MyLogger.d("SHARK", "onFailure()\tresponseCode: ${responseCode}, errorBody: ${errorBody}")
         return Outcome.unsuccessfulOutcome(ApiException.UnexpectedException("responseCode: ${responseCode}, errorBody: ${errorBody}"))
     }
 
