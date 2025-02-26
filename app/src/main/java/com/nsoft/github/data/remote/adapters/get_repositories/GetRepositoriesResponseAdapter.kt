@@ -19,6 +19,7 @@ class GetRepositoriesResponseAdapter @Inject constructor(
         for (repo in response.items) {
             repoList.add(
                 GitRepository(
+                    id = repo.id,
                     owner = GitRepositoryOwner(
                         login = repo.owner.login,
                         avatarUrl = repo.owner.avatarUrl,

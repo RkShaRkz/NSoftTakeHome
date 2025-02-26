@@ -1,11 +1,19 @@
 package com.nsoft.github.domain.model
 
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.nsoft.github.data.local.room.REPOSITORIES_TABLE_NAME
 import org.threeten.bp.Instant
 
 /**
  * A class that models a git repository, containing just what we need to show
  */
+@Entity(tableName = REPOSITORIES_TABLE_NAME)
 data class GitRepository(
+    @PrimaryKey
+    val id: Long,
+    @Embedded(prefix = "owner_")
     val owner: GitRepositoryOwner,
     val repoName: String,
     val description: String,
