@@ -1,0 +1,19 @@
+package com.nsoft.github.data.repository
+
+import com.nsoft.github.domain.model.GitRepository
+import kotlinx.coroutines.flow.Flow
+
+interface GitRepositoriesRepository {
+
+    fun getAllRepositories(): Flow<List<GitRepository>>
+
+    suspend fun getAllRepositoriesSuspend(): List<GitRepository>
+
+    fun isRepositoryFavorited(gitRepository: GitRepository): Flow<Boolean>
+
+    suspend fun isRepositoryFavoritedSuspend(gitRepository: GitRepository): Boolean
+
+    fun setRepositoryFavorited(gitRepository: GitRepository)
+
+    suspend fun setRepositoryFavoritedSuspend(gitRepository: GitRepository)
+}
