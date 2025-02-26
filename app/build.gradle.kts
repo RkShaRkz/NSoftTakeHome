@@ -258,6 +258,11 @@ dependencies {
     // Image loading library coil-compose
     implementation(libs.coil.compose)
 
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
     // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
