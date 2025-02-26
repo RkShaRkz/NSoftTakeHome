@@ -1,5 +1,6 @@
 package com.nsoft.github.presentation.composables
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -142,9 +143,9 @@ fun GitRepoView(
             // Now, the two buttons
             // one for adding/removing the repo to list of favorites
             // and the second one - available only in extended view - for opening the html_url
-            Button(
-                onClick = favoritesButtonClick,
-            ) {
+            Box {
+                // Instead of a button, lets let the caller provide the whole composable to be
+                // used for clicking instead
                 favoritesButtonComposable()
             }
 
