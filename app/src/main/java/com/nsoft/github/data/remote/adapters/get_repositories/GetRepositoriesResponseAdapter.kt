@@ -1,6 +1,7 @@
-package com.nsoft.github.data.remote.adapters
+package com.nsoft.github.data.remote.adapters.get_repositories
 
 import com.google.gson.Gson
+import com.nsoft.github.data.remote.adapters.ResponseAdapter
 import com.nsoft.github.domain.model.GitRepositoriesList
 import com.nsoft.github.domain.model.GitRepository
 import com.nsoft.github.domain.model.GitRepositoryOwner
