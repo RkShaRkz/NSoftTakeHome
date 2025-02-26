@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FirstScreenViewModel @Inject constructor(
-    val getRepositoriesUseCase: GetRepositoriesUseCase
+    private val getRepositoriesUseCase: GetRepositoriesUseCase
 ): BaseViewModel<FirstScreenNavigationEvent, FirstScreenErrorState>() {
 
     override fun initialNavigationStreamValue() = FirstScreenNavigationEvent.NOWHERE

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -13,6 +14,7 @@ import com.nsoft.github.domain.navigation.FirstScreenNavigationEvent
 import com.nsoft.github.domain.navigation.NavigationRoutes
 import com.nsoft.github.presentation.composables.ShowAlertDialog
 import com.nsoft.github.presentation.viewmodel.FirstScreenViewModel
+import com.nsoft.github.util.MyLogger
 import com.nsoft.github.util.exhaustive
 
 @Composable
@@ -25,10 +27,15 @@ fun FirstScreen(navController: NavHostController) {
     val errorEvent by presenter.errorStream.collectAsState()
 
     // Start listening to viewmodel streams
+    val repos by presenter.repositoryListStream.observeAsState()
 
     // Handle navigation events
     HandleNavigationEvents(navigationEvents, navController, presenter)
     HandleErrorEvents(errorEvent, presenter)
+
+    // Tell the presenter to fetch the repos
+    presenter.getRepositories()
+    MyLogger.wtf("SHARK", "repos in FirstScreen: ${repos}")
 }
 
 
