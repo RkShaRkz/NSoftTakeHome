@@ -13,7 +13,7 @@ interface GitRepositoriesRepository {
 
     suspend fun isRepositoryFavoritedSuspend(gitRepository: GitRepository): Boolean
 
-    fun setRepositoryFavorited(gitRepository: GitRepository)
+    fun setRepositoryFavorited(gitRepository: GitRepository, newFavoriteStatus: Boolean)
 
-    suspend fun setRepositoryFavoritedSuspend(gitRepository: GitRepository)
+    suspend fun setRepositoryFavoritedSuspend(gitRepository: GitRepository, newFavoriteStatus: Boolean)
 }

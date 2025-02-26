@@ -17,7 +17,10 @@ import com.nsoft.github.data.remote.calls.ApiCall
 import com.nsoft.github.data.remote.calls.ApiCalls
 import com.nsoft.github.data.remote.calls.QueriedApiCall
 import com.nsoft.github.data.remote.params.get_repositories.GetRepositoriesRequestParams
+import com.nsoft.github.data.repository.GitRepositoriesRepositoryImpl
 import com.nsoft.github.domain.model.GitRepositoriesList
+import com.nsoft.github.domain.repository.GitRepositoriesRepository
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -59,7 +62,11 @@ abstract class BindingModule {
     // This module will remain 'abstract' since it will contain only abstract @Binding modules
     // which will be mixed-in with concrete @Provides methods via an include.
 
-
+    @Binds
+    @Singleton
+    abstract fun bindGitRepository(
+        gitRepositoryImpl: GitRepositoriesRepositoryImpl
+    ): GitRepositoriesRepository
 }
 
 @DisableInstallInCheck
