@@ -5,13 +5,21 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.nsoft.github.data.remote.ApiService
 import com.nsoft.github.data.remote.RetrofitClient
+import com.nsoft.github.data.remote.adapters.get_repositories.GetRepositoriesRequestAdapter
+import com.nsoft.github.data.remote.adapters.get_repositories.GetRepositoriesResponseAdapter
+import com.nsoft.github.data.remote.calls.ApiCall
+import com.nsoft.github.data.remote.calls.ApiCalls
+import com.nsoft.github.data.remote.calls.QueriedApiCall
+import com.nsoft.github.data.remote.params.get_repositories.GetRepositoriesRequestParams
 import com.nsoft.github.domain.model.Clock
+import com.nsoft.github.domain.model.GitRepositoriesList
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dagger.hilt.migration.DisableInstallInCheck
+import org.jetbrains.annotations.ApiStatus
 import retrofit2.Retrofit
 import javax.inject.Named
 import javax.inject.Singleton
@@ -79,4 +87,18 @@ object NetworkModule {
      */
 
     //TODO implement github calls here
+    @Provides
+    @Named(ApiCalls.SEARCH_REPOSITORIES)
+    @Singleton
+    fun provideGetRepositoriesCall(
+        apiService: ApiService,
+        requestAdapter: GetRepositoriesRequestAdapter,
+        responseAdapter: GetRepositoriesResponseAdapter
+    ): ApiCall<GetRepositoriesRequestParams, GitRepositoriesList> {
+        return QueriedApiCall(
+            apiService::getRepositories,
+            requestAdapter,
+            responseAdapter
+        )
+    }
 }
