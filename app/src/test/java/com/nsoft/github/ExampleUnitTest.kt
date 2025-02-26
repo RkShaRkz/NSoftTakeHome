@@ -14,4 +14,9 @@ class ExampleUnitTest {
     fun addition_isCorrect() {
         assertEquals(4, 2 + 2)
     }
+
+//    @Test
+//    fun `this test will fail because I want to test whether the test continuation works`() {
+//        assertEquals(1, 2)
+//    }
 }
