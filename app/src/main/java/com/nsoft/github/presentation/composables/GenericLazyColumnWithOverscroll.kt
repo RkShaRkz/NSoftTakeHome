@@ -19,6 +19,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.Dp
+import com.nsoft.github.util.MyLogger
 
 // Helper extension to check if we're at the end
 fun LazyListState.isAtEnd(): Boolean {
@@ -58,9 +59,14 @@ fun <Type> GenericLazyColumnWithOverscroll(
                 source: NestedScrollSource
             ): Offset {
                 // Detect vertical overscroll once we're at the end
-                if (lazyListState.isAtEnd() && available.y > 0) {
-                    isOverscrolling = true
-                    onOverScrollCallback()
+                if (lazyListState.isAtEnd()) {
+                    if (available.y < 0) {
+                        // ensure we fire it just once
+                        if (!isOverscrolling) {
+                            isOverscrolling = true
+                            onOverScrollCallback()
+                        }
+                    }
                 } else {
                     isOverscrolling = false
                 }

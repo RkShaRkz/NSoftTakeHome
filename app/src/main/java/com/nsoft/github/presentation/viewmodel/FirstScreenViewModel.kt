@@ -56,4 +56,9 @@ class FirstScreenViewModel @Inject constructor(
             }
         }
     }
+
+    fun fetchNextPage() {
+        nextPageToFetch++
+        getRepositories()
+    }
 }
