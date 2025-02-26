@@ -16,9 +16,9 @@ import org.threeten.bp.Instant
         entity = GitRepository::class,
         parentColumns = [REPOSITORIES_PRIMARY_KEY], // Assuming GitRepository has a unique `id` from the API
         childColumns = [FAVORITES_PRIMARY_KEY],
-        onDelete = ForeignKey.CASCADE // Optional: Delete favorite if repo is deleted
+        onDelete = ForeignKey.CASCADE // Delete favorite if repo is deleted
     )],
-    indices = [Index("repoId", unique = true)] // Ensure a repo can't be favorited twice
+    indices = [Index(FAVORITES_PRIMARY_KEY, unique = true)] // Ensure a repo can't be favorited twice
 )
 data class Favorite(
     @PrimaryKey
