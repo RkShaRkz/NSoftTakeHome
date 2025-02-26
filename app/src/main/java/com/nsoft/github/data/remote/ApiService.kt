@@ -12,5 +12,7 @@ import retrofit2.http.QueryMap
  * @see RetrofitClient.API_BASE_URL
  */
 interface ApiService {
-
+//    https://api.github.com/search/repositories?q=language:kotlin&order=desc&sort=stars&per_page=20&page=1
+    @GET("/search/repositories")
+    fun getRepositories(@QueryMap queries: Map<String, String>, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
 }
