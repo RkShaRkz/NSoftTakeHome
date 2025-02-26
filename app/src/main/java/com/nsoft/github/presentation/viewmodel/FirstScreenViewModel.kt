@@ -76,6 +76,6 @@ class FirstScreenViewModel @Inject constructor(
     }
 
     fun isFavoriteFlow(gitRepo: GitRepository): Flow<Boolean> {
-        return gitReposRepository.isRepositoryFavoritedFlow(gitRepo)
+        return gitReposRepository.isRepositoryFavorited(gitRepo)
     }
 }
