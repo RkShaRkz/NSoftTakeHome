@@ -1,8 +1,10 @@
 package com.nsoft.github.domain.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.nsoft.github.data.local.room.REPOSITORIES_PRIMARY_KEY
 import com.nsoft.github.data.local.room.REPOSITORIES_TABLE_NAME
 import org.threeten.bp.Instant
 
@@ -12,6 +14,7 @@ import org.threeten.bp.Instant
 @Entity(tableName = REPOSITORIES_TABLE_NAME)
 data class GitRepository(
     @PrimaryKey
+    @ColumnInfo(name = REPOSITORIES_PRIMARY_KEY)
     val id: Long,
     @Embedded(prefix = "owner_")
     val owner: GitRepositoryOwner,
