@@ -1,5 +1,6 @@
 package com.nsoft.github.data.repository
 
+import androidx.compose.ui.util.fastAny
 import com.nsoft.github.data.local.room.dao.FavoriteDao
 import com.nsoft.github.data.local.room.dao.GitRepositoryDao
 import com.nsoft.github.domain.model.Favorite
@@ -72,7 +73,19 @@ class GitRepositoriesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addRepositoriesSuspend(repoList: List<GitRepository>) {
-        gitRepositoryDao.insertAll(repoList)
+        // First, grab all existing repos
+        val currentRepos = gitRepositoryDao.getAllRepositories()
+
+        // Split the argument into two lists, one for insertion and one for updating
+        val updateRepos = repoList
+            .filter { repo ->
+                currentRepos.fastAny { it.id == repo.id }
+            }
+        val insertRepos = repoList.filter { it !in updateRepos }
+
+        // Now that we have our two spliced lists, lets update all existing and insert new ones
+        gitRepositoryDao.updateAll(updateRepos)
+        gitRepositoryDao.insertAll(insertRepos)
     }
 
     /**

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.nsoft.github.data.local.room.REPOSITORIES_TABLE_NAME
 import com.nsoft.github.domain.model.GitRepository
 import kotlinx.coroutines.flow.Flow
@@ -24,8 +25,17 @@ interface GitRepositoryDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(gitRepository: GitRepository)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    // Literally the same problem. Leave it commented out as a reminder to never fall into temptation
+    // of "fixing" or "improving" this by changing it to REPLACE ...
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(repositories: List<GitRepository>)
+
+    @Update
+    suspend fun update(gitRepository: GitRepository)
+
+    @Update
+    suspend fun updateAll(repositories: List<GitRepository>)
 
     @Query("SELECT * FROM ${REPOSITORIES_TABLE_NAME}")
     suspend fun getAllRepositories(): List<GitRepository>
