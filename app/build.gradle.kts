@@ -248,6 +248,9 @@ dependencies {
     // Backported java.time features to lower APIs
     implementation(libs.threetenabp)
 
+    // Image loading library coil-compose
+    implementation(libs.coil.compose)
+
     // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

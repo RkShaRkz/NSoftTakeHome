@@ -28,6 +28,7 @@ jacoco = "0.8.12"
 kotlinx-coroutines-test = "1.9.0"   #do not upgrade to "1.10.1" because it still has issues with jacoco (besides other problems it has)
 androidx-core-testing = "2.2.0"
 threetenabp = "1.4.6"
+coil-compose = "2.0.0"
 
 [libraries]
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
@@ -61,7 +62,9 @@ okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-i
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 
 # ThreeTenABP for parsing into Instant (backported java8 / API26+ to lower APIs)
-threetenabp = { group = "com.jakewharton.threetenabp", name = "threetenabp", version.ref = "threetenabp"}
+threetenabp = { group = "com.jakewharton.threetenabp", name = "threetenabp", version.ref = "threetenabp" }
+# coil-compose is an image loading library
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil-compose" }
 
 # Tests
 junit = { group = "junit", name = "junit", version.ref = "junit" }
