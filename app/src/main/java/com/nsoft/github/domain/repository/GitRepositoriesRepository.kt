@@ -1,4 +1,4 @@
-package com.nsoft.github.data.repository
+package com.nsoft.github.domain.repository
 
 import com.nsoft.github.domain.model.GitRepository
 import kotlinx.coroutines.flow.Flow
