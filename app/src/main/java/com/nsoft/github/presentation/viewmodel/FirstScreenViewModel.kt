@@ -1,8 +1,5 @@
 package com.nsoft.github.presentation.viewmodel
 
-import androidx.compose.runtime.collectAsState
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.nsoft.github.domain.exception.ApiException
 import com.nsoft.github.domain.model.FirstScreenErrorState
@@ -13,7 +10,7 @@ import com.nsoft.github.domain.usecase.GetRepositoriesUseCase
 import com.nsoft.github.domain.usecase.params.GetRepositoriesUseCaseParams
 import com.nsoft.github.util.exhaustive
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -72,5 +69,13 @@ class FirstScreenViewModel @Inject constructor(
     fun fetchNextPage() {
         nextPageToFetch++
         getRepositories()
+    }
+
+    fun toggleFavoriteStatus(gitRepo: GitRepository) {
+        gitReposRepository.toggleRepositoryFavoriteStatus(gitRepo)
+    }
+
+    fun isFavoriteFlow(gitRepo: GitRepository): Flow<Boolean> {
+        return gitReposRepository.isRepositoryFavoritedFlow(gitRepo)
     }
 }

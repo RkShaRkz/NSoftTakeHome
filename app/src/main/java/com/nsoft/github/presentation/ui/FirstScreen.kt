@@ -10,10 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
@@ -28,7 +24,6 @@ import com.nsoft.github.presentation.composables.GenericLazyColumnWithOverscroll
 import com.nsoft.github.presentation.composables.GitRepoView
 import com.nsoft.github.presentation.composables.ShowAlertDialog
 import com.nsoft.github.presentation.viewmodel.FirstScreenViewModel
-import com.nsoft.github.util.MyLogger
 import com.nsoft.github.util.exhaustive
 
 @Composable
@@ -39,9 +34,6 @@ fun FirstScreen(navController: NavHostController) {
     // Apparently this is more preferred than using a LiveData for this.
     val navigationEvents by presenter.navigationStream.collectAsState()
     val errorEvent by presenter.errorStream.collectAsState()
-
-//    isFavorite = remember { mutableStateOf(favoritesRepository.isFavorite(filename)) }
-    var isFavorite by remember { mutableStateOf(true) } //TODO this needs to depend on the repo
 
     // Start listening to viewmodel streams
     val repos by presenter.repositoryListStream.collectAsState()
@@ -64,18 +56,16 @@ fun FirstScreen(navController: NavHostController) {
                 useExtendedView = false,
                 gitRepoToShow = gitRepo,
                 modifier = Modifier,
-                favoritesButtonClick = { MyLogger.d("SHARK", "add repo ${gitRepo} to favorites") },
+                favoritesButtonClick = { presenter.toggleFavoriteStatus(gitRepo) },
                 favoritesButtonComposable = {
-                    //TODO make the text change depending on whats in the repo
+                    val isFavorite by presenter.isFavoriteFlow(gitRepo).collectAsState(initial = false)
                     Icon(
                         imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = "Favorite",
                         modifier = Modifier
                             .padding(dimensionResource(R.dimen.margin_single))  //was double
                             .clickable {
-//                                isFavorite.value = !isFavorite.value
-                                isFavorite = !isFavorite
-//                                favoritesRepository.setFavorite(filename, isFavorite.value)
+                                presenter.toggleFavoriteStatus(gitRepo)
                             }
                     )
                 },

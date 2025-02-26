@@ -74,4 +74,19 @@ class GitRepositoriesRepositoryImpl @Inject constructor(
     override suspend fun addRepositoriesSuspend(repoList: List<GitRepository>) {
         gitRepositoryDao.insertAll(repoList)
     }
+
+    /**
+     * This one also launches [toggleRepositoryFavoriteStatusSuspend] internally
+     */
+    override fun toggleRepositoryFavoriteStatus(repo: GitRepository) {
+        CoroutineScope(Dispatchers.IO).launch {
+            toggleRepositoryFavoriteStatusSuspend(repo)
+        }
+    }
+
+    override suspend fun toggleRepositoryFavoriteStatusSuspend(repo: GitRepository) {
+        // get current status
+        val currentFavStatus = isRepositoryFavoritedSuspend(repo)
+        setRepositoryFavoritedSuspend(repo, !currentFavStatus)
+    }
 }
