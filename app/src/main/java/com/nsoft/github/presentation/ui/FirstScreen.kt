@@ -44,7 +44,7 @@ fun FirstScreen(navController: NavHostController) {
     var isFavorite by remember { mutableStateOf(true) } //TODO this needs to depend on the repo
 
     // Start listening to viewmodel streams
-    val repos by presenter.repositoryListStream.observeAsState(emptyList())
+    val repos by presenter.repositoryListStream.collectAsState()
 
     // Handle navigation events
     HandleNavigationEvents(navigationEvents, navController, presenter)
