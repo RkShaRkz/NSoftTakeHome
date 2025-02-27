@@ -8,6 +8,7 @@ import com.nsoft.github.data.remote.adapters.RequestAdapter
 import com.nsoft.github.data.remote.adapters.ResponseAdapter
 import com.nsoft.github.data.remote.params.RequestParams
 import com.nsoft.github.domain.model.ResponseDomainData
+import com.nsoft.github.domain.usecase.NetworkingUseCase
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -95,6 +96,15 @@ sealed class PathApiCall<NetworkParams : RequestParams, out DomainClass : Respon
     apiCallType: ApiCallType
 ) : ApiCall<NetworkParams, DomainClass>(requestAdapter, responseAdapter, apiCallType) {
 
+    /**
+     * One 'path' element version of [PathApiCall] kind of [ApiCall].
+     * Will serve endpoints looking like this:
+     * ```
+     * https://www.backend.com/path_element1
+     * ```
+     *
+     * @see PathApiCall
+     */
     data class OnePathElementsApiCall<PathType, NetworkParams : RequestParams, out DomainClass : ResponseDomainData> @Inject constructor(
         private val retrofitCall: (PathType) -> Call<ResponseBody>,
         private val requestAdapter: RequestAdapter<NetworkParams>,
@@ -107,6 +117,15 @@ sealed class PathApiCall<NetworkParams : RequestParams, out DomainClass : Respon
         }
     }
 
+    /**
+     * Two 'path' elements version of [PathApiCall] kind of [ApiCall].
+     * Will serve endpoints looking like this:
+     * ```
+     * https://www.backend.com/path_element1/path_element2
+     * ```
+     *
+     * @see PathApiCall
+     */
     data class TwoPathElementsApiCall<PathType1, PathType2, NetworkParams : RequestParams, out DomainClass : ResponseDomainData> @Inject constructor(
         private val retrofitCall: (PathType1, PathType2) -> Call<ResponseBody>,
         private val requestAdapter: RequestAdapter<NetworkParams>,
@@ -122,6 +141,15 @@ sealed class PathApiCall<NetworkParams : RequestParams, out DomainClass : Respon
         }
     }
 
+    /**
+     * Three 'path' elements version of [PathApiCall] kind of [ApiCall].
+     * Will serve endpoints looking like this:
+     * ```
+     * https://www.backend.com/path_element1/path_element2/path_element3
+     * ```
+     *
+     * @see PathApiCall
+     */
     data class ThreePathElementsApiCall<PathType1, PathType2, PathType3, NetworkParams : RequestParams, out DomainClass : ResponseDomainData> @Inject constructor(
         private val retrofitCall: (PathType1, PathType2, PathType3) -> Call<ResponseBody>,
         private val requestAdapter: RequestAdapter<NetworkParams>,
@@ -136,6 +164,34 @@ sealed class PathApiCall<NetworkParams : RequestParams, out DomainClass : Respon
                 params.pathParams[2] as PathType3
             )
         }
+    }
+}
+
+/**
+ * Base class for OUR wrapped version of the LITERAL_URL Retrofit call which also contains it's
+ * [RequestAdapter] and [ResponseAdapter] bundled with it so that DI can do most of the magic.
+ *
+ * This class should be used as a "wrapper" around query-based API calls such as
+ * ```
+ * <literal url>
+ * ```
+ *
+ * @param NetworkParams the concrete subclass of [RequestParams], parameters used for the networking call itself
+ * @param DomainClass the actual domain class, subclass of [ResponseDomainData], that this call provides (extracts)
+ * from the networking response itself
+ *
+ * @see ApiCallType
+ */
+data class LiteralUrlApiCall<NetworkParams : RequestParams, out DomainClass : ResponseDomainData>
+@Inject constructor(
+    private val retrofitCall: (String) -> Call<ResponseBody>,
+    private val requestAdapter: RequestAdapter<NetworkParams>,
+    private val responseAdapter: ResponseAdapter<DomainClass>
+): ApiCall<NetworkParams, DomainClass>(requestAdapter, responseAdapter, ApiCallType.QUERY) {
+
+    override fun getCall(params: CallParams): Call<ResponseBody> {
+        require(params is CallParams.LiteralUrlParams)
+        return retrofitCall(params.url)
     }
 }
 
@@ -187,21 +243,28 @@ sealed class ApiCall<NetworkParams : RequestParams, out DomainClass : ResponseDo
  * or a "Normal" API that just uses the header/values payload.
  *
  * A "Path" api is one that looks like https://www.backend.com/endpoint/path1/path2/...
+ *
+ * A "Literal URL" api is one that looks like any random URL obtained from anywhere
  */
-enum class ApiCallType { QUERY, NORMAL, PATH }
+enum class ApiCallType { QUERY, NORMAL, PATH, LITERAL_URL }
 
 /**
  * Sealed class for encapsulating parameters required for different API call types.
  *
+ * All of these parameters are created by [NetworkingUseCase] exclusively, in it's [NetworkingUseCase.provideParams]
+ * method
+ *
  * @see NormalParams
  * @see QueriedParams
  * @see PathParams
+ * @see LiteralUrlParams
  */
 sealed class CallParams {
     /**
      * "Normal" params for "normal" API calls which just attach [headers] and have values ([fields])
      */
     data class NormalParams(val headers: HeadersMap, val fields: FieldsMap) : CallParams()
+
     /**
      * "Queried" params for "query" API calls which attach [headers] and have values ([fields])
      * alongside their "query parameters" ([query]) which get appended to the endpoint itself
@@ -210,6 +273,18 @@ sealed class CallParams {
 
     /**
      * "Path" params for "path" API calls which attach the elements of [pathParams] list into the endpoint itself
+     * These are created from the [QueryMap] part of the converted parameters once the [RequestAdapter] is
+     * done with them
      */
     data class PathParams(val pathParams: List<Any>) : CallParams()
+
+    /**
+     * "Literal URL" params for the 'literal url' API calls which really just target any literal URL as it's endpoint
+     * These are created from the *only* value (`url`) in the [QueryMap] after the [RequestAdapter] converts it
+     */
+    data class LiteralUrlParams(val url: String): CallParams() {
+        companion object {
+            public const val TARGET_URL_CONSTANT = "url"
+        }
+    }
 }

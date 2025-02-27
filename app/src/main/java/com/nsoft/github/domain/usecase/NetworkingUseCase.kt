@@ -162,6 +162,21 @@ abstract class NetworkingUseCase<
                                     callParams
                                 ).execute()
                             }
+
+                            ApiCallType.LITERAL_URL -> {
+                                val targetUrl = convertedParams.third.get(CallParams.LiteralUrlParams.TARGET_URL_CONSTANT)
+                                if (targetUrl != null) {
+                                    val callParams = CallParams.LiteralUrlParams(
+                                        targetUrl
+                                    )
+
+                                    wrappedCall.getCall(
+                                        callParams
+                                    ).execute()
+                                } else {
+                                    throw IllegalStateException("The URL must be passed by using the CallParams.LiteralUrlParams.TARGET_URL_CONSTANT in the QueryMap returned by the RequestAdapter !!!")
+                                }
+                            }
                         }.exhaustive
 
                     return@Callable if (response.isSuccessful) {
