@@ -1,21 +1,33 @@
 package com.nsoft.github.presentation.ui
 
+import android.content.Intent
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.nsoft.github.R
+import com.nsoft.github.data.local.UriMaker
 import com.nsoft.github.domain.model.SecondScreenErrorState
 import com.nsoft.github.domain.navigation.FirstScreenNavigationEvent
 import com.nsoft.github.domain.navigation.NavigationRoutes
 import com.nsoft.github.domain.navigation.SecondScreenNavigationEvent
+import com.nsoft.github.presentation.composables.GitRepoView
 import com.nsoft.github.presentation.composables.ShowAlertDialog
 import com.nsoft.github.presentation.viewmodel.FirstScreenViewModel
 import com.nsoft.github.presentation.viewmodel.SecondScreenViewModel
@@ -36,10 +48,33 @@ fun SecondScreen(navController: NavHostController) {
     HandleNavigationEvents(navigationEvents, navController, presenter)
     HandleErrorEvents(errorEvent, presenter)
 
-    Row {
-        Button(
-            onClick = { presenter.getRepoDetails() }
-        ) { Text("Get Repo Details") }
+    val gitRepo = presenter.getClickedRepo()
+    Column {
+        Row {
+            Button(
+                onClick = { presenter.getRepoDetails() }
+            ) { Text("Get Repo Details") }
+        }
+        GitRepoView(
+            useExtendedView = true,
+            gitRepoToShow = gitRepo,
+            modifier = Modifier,
+            favoritesButtonClick = { presenter.toggleFavoriteStatus(gitRepo) },
+            favoritesButtonComposable = {
+                val isFavorite by presenter.isFavoriteRepository(gitRepo)
+                    .collectAsState(initial = false)
+                Icon(
+                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Favorite",
+                    modifier = Modifier
+                        .padding(dimensionResource(R.dimen.margin_single))  //was double
+                        .clickable {
+                            presenter.toggleFavoriteStatus(gitRepo)
+                        }
+                )
+            },
+            openUrlButtonClick = { presenter.onUrlButtonClicked(gitRepo) }
+        )
     }
 }
 
@@ -60,6 +95,7 @@ private fun HandleNavigationEvents(
     navController: NavHostController,
     presenter: SecondScreenViewModel
 ) {
+    val context = LocalContext.current
     LaunchedEffect(navigationEvents) {
         when (navigationEvents) {
             SecondScreenNavigationEvent.NOWHERE -> {
@@ -72,6 +108,12 @@ private fun HandleNavigationEvents(
                     //TODO decide on this one later when you see how the app actually works out and whether this makes sense
 //                    popUpTo(NavigationRoutes.THIRD_SCREEN.getRouteName()) { inclusive = true }
                 }
+            }
+
+            SecondScreenNavigationEvent.PROJECT_URL -> {
+                val url = UriMaker.createUri(presenter.getDestinationUrlString())
+                val intent = Intent(Intent.ACTION_VIEW, url)
+                context.startActivity(intent)
             }
         }.exhaustive
         // And tell the presenter we're done navigating so it can clear the last navigation value
