@@ -80,7 +80,7 @@ fun FirstScreen(navController: NavHostController) {
                         .clickable { presenter.onItemClicked(gitRepo) },
                     favoritesButtonClick = { presenter.toggleFavoriteStatus(gitRepo) },
                     favoritesButtonComposable = {
-                        val isFavorite by presenter.isFavoriteFlow(gitRepo)
+                        val isFavorite by presenter.isFavoriteRepository(gitRepo)
                             .collectAsState(initial = false)
                         Icon(
                             imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
