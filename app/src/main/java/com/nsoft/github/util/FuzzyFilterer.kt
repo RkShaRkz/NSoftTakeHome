@@ -1,5 +1,6 @@
 package com.nsoft.github.util
 
+import com.nsoft.github.domain.model.GitRepository
 import java.io.File
 import javax.inject.Inject
 
@@ -42,33 +43,24 @@ class FuzzyFilterer @Inject constructor(
     }
 
     /**
-     * Function that checks whether a file named [fileName] matches our fuzzy [searchTerm] by having it's
+     * Function that checks whether a file named [name] matches our fuzzy [searchTerm] by having it's
      * levenshtein distance smaller than [ACCEPTABLE_LEVENSHTEIN_DISTANCE] (which defaults to 4)
      *
      * If the file's name is within acceptable levenshtein distance of our search term, it meets the fuzzy search criteria
      *
-     * @param fileName the filename of the file we're checking to be included in the fuzzy search results
+     * @param name the name of the thing we're checking to be included in the fuzzy search results
      * @param searchTerm the fuzzy search term to match
      * @param ACCEPTABLE_LEVENSHTEIN_DISTANCE the acceptable levenshtein distance. Defaults to 4.
-     * @return whether the filename matches the fuzzy search term or not
+     * @return whether the name matches the fuzzy search term or not
      *
      * @see levenshteinDistance
      */
-    fun matchesFuzzySearch(fileName: String, searchTerm: String, ACCEPTABLE_LEVENSHTEIN_DISTANCE: Int = 4): Boolean {
+    fun matchesFuzzySearch(name: String, searchTerm: String, ACCEPTABLE_LEVENSHTEIN_DISTANCE: Int = 4): Boolean {
         return if (searchTerm.isBlank()) {
             true
         } else {
-            fileName.contains(searchTerm, ignoreCase = true)
-                    || levenshteinDistance(fileName.lowercase(), searchTerm.lowercase()) <= ACCEPTABLE_LEVENSHTEIN_DISTANCE
+            name.contains(searchTerm, ignoreCase = true)
+                    || levenshteinDistance(name.lowercase(), searchTerm.lowercase()) <= ACCEPTABLE_LEVENSHTEIN_DISTANCE
         }
-    }
-
-    /**
-     * Quick utility method to filter a file list for those whose name matches the search term fuzzy search criteria
-     *
-     * @see matchesFuzzySearch
-     */
-    fun filterFileListForFuzzySearch(fileList: List<File>, searchTerm: String): List<File> {
-        return fileList.filter { file -> matchesFuzzySearch(file.name, searchTerm) }
     }
 }
