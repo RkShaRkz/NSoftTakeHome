@@ -6,6 +6,7 @@ import com.nsoft.github.domain.model.FirstScreenErrorState
 import com.nsoft.github.domain.model.GitRepository
 import com.nsoft.github.domain.navigation.FirstScreenNavigationEvent
 import com.nsoft.github.domain.repository.GitRepositoriesRepository
+import com.nsoft.github.domain.repository.TransitionalDataRepository
 import com.nsoft.github.domain.usecase.GetRepositoriesUseCase
 import com.nsoft.github.domain.usecase.params.GetRepositoriesUseCaseParams
 import com.nsoft.github.util.MyLogger
@@ -13,17 +14,16 @@ import com.nsoft.github.util.exhaustive
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FirstScreenViewModel @Inject constructor(
     private val getRepositoriesUseCase: GetRepositoriesUseCase,
-    private val gitReposRepository: GitRepositoriesRepository
+    private val gitReposRepository: GitRepositoriesRepository,
+    private val transitionalDataRepository: TransitionalDataRepository
 ): BaseViewModel<FirstScreenNavigationEvent, FirstScreenErrorState>() {
 
     private var nextPageToFetch = 1
@@ -96,7 +96,8 @@ class FirstScreenViewModel @Inject constructor(
     }
 
     fun onItemClicked(gitRepo: GitRepository) {
-
+        transitionalDataRepository.setClickedGitRepo(gitRepo)
+        _navigationStream.value = FirstScreenNavigationEvent.SECOND_SCREEN
     }
 
     fun setFilterCriteria(filterString: String) {
