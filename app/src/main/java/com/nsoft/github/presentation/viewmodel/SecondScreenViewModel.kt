@@ -24,8 +24,7 @@ class SecondScreenViewModel @Inject constructor(
     override fun initialNavigationStreamValue() = SecondScreenNavigationEvent.NOWHERE
     override fun initialErrorStreamValue() = SecondScreenErrorState.NoError
 
-    init {
-        // Observe Room's StateFlow and update the inner MutableStateFlow
+    fun getRepoDetails() {
         viewModelScope.launch {
             getRepositoryDetailsUseCase.executeSuspendWithCallback(
                 GetRepositoryDetailsUseCaseParams(

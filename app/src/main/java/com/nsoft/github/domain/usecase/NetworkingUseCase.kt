@@ -128,11 +128,13 @@ abstract class NetworkingUseCase<
                             }
 
                             ApiCallType.PATH -> {
+                                //TODO parametrize this better
+
                                 // Ughhhhh this hack .....
                                 // The map doesn't preserve ordering. So, hopefully we get lucky by
-                                // taking the e.g. first map's values and hope they turn out alright
+                                // taking the e.g. query map's values and hope they turn out alright
                                 //TODO sort them lexicographically then invert if this doesn't work out though ...
-                                val pathParams = convertedParams.first.values
+                                val pathParams = convertedParams.third.values
                                 val callParams = CallParams.PathParams(
                                     pathParams = pathParams.toList()
                                 )

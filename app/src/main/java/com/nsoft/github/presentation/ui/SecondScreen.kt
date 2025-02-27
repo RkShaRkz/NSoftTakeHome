@@ -1,9 +1,13 @@
 package com.nsoft.github.presentation.ui
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -31,6 +35,12 @@ fun SecondScreen(navController: NavHostController) {
     // Handle navigation events
     HandleNavigationEvents(navigationEvents, navController, presenter)
     HandleErrorEvents(errorEvent, presenter)
+
+    Row {
+        Button(
+            onClick = { presenter.getRepoDetails() }
+        ) { Text("Get Repo Details") }
+    }
 }
 
 
