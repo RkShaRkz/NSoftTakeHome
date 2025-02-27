@@ -16,8 +16,8 @@ import com.nsoft.github.data.remote.adapters.repository_details.GetRepositoryDet
 import com.nsoft.github.data.remote.adapters.repository_details.GetRepositoryDetailsResponseAdapter
 import com.nsoft.github.data.remote.calls.ApiCall
 import com.nsoft.github.data.remote.calls.ApiCalls
+import com.nsoft.github.data.remote.calls.PathApiCall
 import com.nsoft.github.data.remote.calls.QueriedApiCall
-import com.nsoft.github.data.remote.calls.TwoPathApiCall
 import com.nsoft.github.data.remote.params.get_repositories.GetRepositoriesRequestParams
 import com.nsoft.github.data.remote.params.repository_details.GetRepositoryDetailsRequestParams
 import com.nsoft.github.data.repository.GitRepositoriesRepositoryImpl
@@ -134,8 +134,7 @@ object NetworkModule {
         requestAdapter: GetRepositoryDetailsRequestAdapter,
         responseAdapter: GetRepositoryDetailsResponseAdapter
     ): ApiCall<GetRepositoryDetailsRequestParams, RepositoryDetails> {
-        // TODO likely will need some "dynamic url" call here
-        return TwoPathApiCall(
+        return PathApiCall.TwoPathElementsApiCall(
             apiService::getRepositoryDetails,
             requestAdapter,
             responseAdapter

@@ -5,6 +5,9 @@ import com.nsoft.github.data.remote.adapters.ResponseAdapter
 import com.nsoft.github.data.remote.calls.ApiCall
 import com.nsoft.github.data.remote.calls.ApiCallType
 import com.nsoft.github.data.remote.calls.CallParams
+import com.nsoft.github.data.remote.calls.NormalApiCall
+import com.nsoft.github.data.remote.calls.PathApiCall
+import com.nsoft.github.data.remote.calls.QueriedApiCall
 import com.nsoft.github.data.remote.params.RequestParams
 import com.nsoft.github.domain.Outcome
 import com.nsoft.github.domain.exception.ApiException
@@ -128,8 +131,6 @@ abstract class NetworkingUseCase<
                             }
 
                             ApiCallType.PATH -> {
-                                //TODO parametrize this better
-
                                 // Ughhhhh this hack .....
                                 // The map doesn't preserve ordering. So, hopefully we get lucky by
                                 // taking the e.g. query map's values and hope they turn out alright
@@ -138,6 +139,24 @@ abstract class NetworkingUseCase<
                                 val callParams = CallParams.PathParams(
                                     pathParams = pathParams.toList()
                                 )
+
+                                // Obviously, only PATH calls are going to be here, so we can just go ahead
+                                // and call it with the list of parameters. However, if finer-grained
+                                // control ever becomes needed, do uncomment this part below and do
+                                // what is necessary there ...
+                                /*
+                                when (wrappedCall) {
+                                    is PathApiCall -> {
+                                        when (wrappedCall) {
+                                            is PathApiCall.OnePathElementsApiCall -> TODO()
+                                            is PathApiCall.ThreePathElementsApiCall -> TODO()
+                                            is PathApiCall.TwoPathElementsApiCall -> TODO()
+                                        }.exhaustive
+                                    }
+                                    is NormalApiCall,
+                                    is QueriedApiCall -> {/* can't happen here, so is of no concern */}
+                                }.exhaustive
+                                 */
 
                                 wrappedCall.getCall(
                                     callParams

@@ -12,6 +12,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Retrofit
 import javax.inject.Inject
+import retrofit2.http.Path
 
 /**
  * Base class for OUR wrapped version of the form-url-encoded Retrofit call which also contains
@@ -76,6 +77,11 @@ data class QueriedApiCall<NetworkParams : RequestParams, out DomainClass : Respo
  * https://backend.com/endpoint/{queryParam1}/{queryParam2}/...
  * ```
  *
+ * **IMPORTANT NOTE:** to comply with the rest of the [ApiCall] definition, this call will take it's
+ * path (see [Path]) parameters from the **third** map ([QueryMap]) returned by the [RequestAdapter.convert],
+ * and put them in the order they were in the order that is returned by [Map.values]. For more details
+ * also see [NetworkingUseCase] portion that references [ApiCallType.PATH]
+ *
  * @param NetworkParams the concrete subclass of [RequestParams], parameters used for the networking call itself
  * @param DomainClass the actual domain class, subclass of [ResponseDomainData], that this call provides (extracts)
  * from the networking response itself
@@ -83,15 +89,53 @@ data class QueriedApiCall<NetworkParams : RequestParams, out DomainClass : Respo
  * @see ApiCallType
  */
 
-data class TwoPathApiCall<NetworkParams : RequestParams, out DomainClass : ResponseDomainData> @Inject constructor(
-    private val retrofitCall: (String, String) -> Call<ResponseBody>,
-    private val requestAdapter: RequestAdapter<NetworkParams>,
-    private val responseAdapter: ResponseAdapter<DomainClass>
-) : ApiCall<NetworkParams, DomainClass>(requestAdapter, responseAdapter, ApiCallType.PATH) {
+sealed class PathApiCall<NetworkParams : RequestParams, out DomainClass : ResponseDomainData>(
+    requestAdapter: RequestAdapter<NetworkParams>,
+    responseAdapter: ResponseAdapter<DomainClass>,
+    apiCallType: ApiCallType
+) : ApiCall<NetworkParams, DomainClass>(requestAdapter, responseAdapter, apiCallType) {
 
-    override fun getCall(params: CallParams): Call<ResponseBody> {
-        require(params is CallParams.PathParams)
-        return retrofitCall(params.pathParams[0], params.pathParams[1])
+    data class OnePathElementsApiCall<PathType, NetworkParams : RequestParams, out DomainClass : ResponseDomainData> @Inject constructor(
+        private val retrofitCall: (PathType) -> Call<ResponseBody>,
+        private val requestAdapter: RequestAdapter<NetworkParams>,
+        private val responseAdapter: ResponseAdapter<DomainClass>
+    ) : PathApiCall<NetworkParams, DomainClass>(requestAdapter, responseAdapter, ApiCallType.PATH) {
+
+        override fun getCall(params: CallParams): Call<ResponseBody> {
+            require(params is CallParams.PathParams)
+            return retrofitCall(params.pathParams[0] as PathType)
+        }
+    }
+
+    data class TwoPathElementsApiCall<PathType1, PathType2, NetworkParams : RequestParams, out DomainClass : ResponseDomainData> @Inject constructor(
+        private val retrofitCall: (PathType1, PathType2) -> Call<ResponseBody>,
+        private val requestAdapter: RequestAdapter<NetworkParams>,
+        private val responseAdapter: ResponseAdapter<DomainClass>
+    ) : PathApiCall<NetworkParams, DomainClass>(requestAdapter, responseAdapter, ApiCallType.PATH) {
+
+        override fun getCall(params: CallParams): Call<ResponseBody> {
+            require(params is CallParams.PathParams)
+            return retrofitCall(
+                params.pathParams[0] as PathType1,
+                params.pathParams[1] as PathType2
+            )
+        }
+    }
+
+    data class ThreePathElementsApiCall<PathType1, PathType2, PathType3, NetworkParams : RequestParams, out DomainClass : ResponseDomainData> @Inject constructor(
+        private val retrofitCall: (PathType1, PathType2, PathType3) -> Call<ResponseBody>,
+        private val requestAdapter: RequestAdapter<NetworkParams>,
+        private val responseAdapter: ResponseAdapter<DomainClass>
+    ) : PathApiCall<NetworkParams, DomainClass>(requestAdapter, responseAdapter, ApiCallType.PATH) {
+
+        override fun getCall(params: CallParams): Call<ResponseBody> {
+            require(params is CallParams.PathParams)
+            return retrofitCall(
+                params.pathParams[0] as PathType1,
+                params.pathParams[1] as PathType2,
+                params.pathParams[2] as PathType3
+            )
+        }
     }
 }
 
@@ -167,5 +211,5 @@ sealed class CallParams {
     /**
      * "Path" params for "path" API calls which attach the elements of [pathParams] list into the endpoint itself
      */
-    data class PathParams(val pathParams: List<String>) : CallParams()
+    data class PathParams(val pathParams: List<Any>) : CallParams()
 }
