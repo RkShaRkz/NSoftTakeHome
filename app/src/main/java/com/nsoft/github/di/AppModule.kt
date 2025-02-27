@@ -10,18 +10,23 @@ import com.nsoft.github.data.local.room.dao.FavoriteRepositoryDao
 import com.nsoft.github.data.local.room.dao.GitRepositoryDao
 import com.nsoft.github.data.remote.ApiService
 import com.nsoft.github.data.remote.RetrofitClient
+import com.nsoft.github.data.remote.adapters.get_collaborators.GetCollaboratorsRequestAdapter
+import com.nsoft.github.data.remote.adapters.get_collaborators.GetCollaboratorsResponseAdapter
 import com.nsoft.github.data.remote.adapters.get_repositories.GetRepositoriesRequestAdapter
 import com.nsoft.github.data.remote.adapters.get_repositories.GetRepositoriesResponseAdapter
 import com.nsoft.github.data.remote.adapters.repository_details.GetRepositoryDetailsRequestAdapter
 import com.nsoft.github.data.remote.adapters.repository_details.GetRepositoryDetailsResponseAdapter
 import com.nsoft.github.data.remote.calls.ApiCall
 import com.nsoft.github.data.remote.calls.ApiCalls
+import com.nsoft.github.data.remote.calls.LiteralUrlApiCall
 import com.nsoft.github.data.remote.calls.PathApiCall
 import com.nsoft.github.data.remote.calls.QueriedApiCall
+import com.nsoft.github.data.remote.params.get_collaborators.GetCollaboratorsRequestParams
 import com.nsoft.github.data.remote.params.get_repositories.GetRepositoriesRequestParams
 import com.nsoft.github.data.remote.params.repository_details.GetRepositoryDetailsRequestParams
 import com.nsoft.github.data.repository.GitRepositoriesRepositoryImpl
 import com.nsoft.github.data.repository.TransitionalDataRepositoryImpl
+import com.nsoft.github.domain.model.GitCollaboratorList
 import com.nsoft.github.domain.model.GitRepositoriesList
 import com.nsoft.github.domain.model.RepositoryDetails
 import com.nsoft.github.domain.repository.GitRepositoriesRepository
@@ -125,7 +130,6 @@ object NetworkModule {
         )
     }
 
-    // This one most likely won't work but... lets give it a try
     @Provides
     @Named(ApiCalls.REPOSITORY_DETAILS)
     @Singleton
@@ -136,6 +140,21 @@ object NetworkModule {
     ): ApiCall<GetRepositoryDetailsRequestParams, RepositoryDetails> {
         return PathApiCall.TwoPathElementsApiCall(
             apiService::getRepositoryDetails,
+            requestAdapter,
+            responseAdapter
+        )
+    }
+
+    @Provides
+    @Named(ApiCalls.GET_COLLABORATORS)
+    @Singleton
+    fun provideGetCollaboratorsFromRepositoryCall(
+        apiService: ApiService,
+        requestAdapter: GetCollaboratorsRequestAdapter,
+        responseAdapter: GetCollaboratorsResponseAdapter
+    ): ApiCall<GetCollaboratorsRequestParams, GitCollaboratorList> {
+        return LiteralUrlApiCall(
+            apiService::getCollaboratorsFromRepository,
             requestAdapter,
             responseAdapter
         )

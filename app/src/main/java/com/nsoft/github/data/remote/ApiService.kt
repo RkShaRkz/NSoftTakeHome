@@ -20,6 +20,7 @@ interface ApiService {
     @GET("/repos/{owner}/{name}")
     fun getRepositoryDetails(@Path("owner") owner: String,@Path("name") name: String): Call<ResponseBody>
 
+    // This one is a fully dynamic URL coming from the API, so we will just use an empty @GET for it
     @GET
     fun getCollaboratorsFromRepository(@Url url: String): Call<ResponseBody>
 }
