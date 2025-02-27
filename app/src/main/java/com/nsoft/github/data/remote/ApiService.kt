@@ -4,6 +4,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.HeaderMap
+import retrofit2.http.Path
 import retrofit2.http.QueryMap
 
 /**
@@ -14,4 +15,9 @@ import retrofit2.http.QueryMap
 interface ApiService {
     @GET("/search/repositories")
     fun getRepositories(@QueryMap queries: Map<String, String>, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
+
+//    @GET("/repos/{owner}/{name}")
+//    fun getRepositoryDetails(@Path("owner") owner: String,@Path("name") name: String): Call<ResponseBody>
+    @GET("/repos/")
+    fun getRepositoryDetails(@QueryMap queries: Map<String, String>, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
 }

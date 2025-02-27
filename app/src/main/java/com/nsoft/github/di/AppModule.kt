@@ -12,13 +12,17 @@ import com.nsoft.github.data.remote.ApiService
 import com.nsoft.github.data.remote.RetrofitClient
 import com.nsoft.github.data.remote.adapters.get_repositories.GetRepositoriesRequestAdapter
 import com.nsoft.github.data.remote.adapters.get_repositories.GetRepositoriesResponseAdapter
+import com.nsoft.github.data.remote.adapters.repository_details.GetRepositoryDetailsRequestAdapter
+import com.nsoft.github.data.remote.adapters.repository_details.GetRepositoryDetailsResponseAdapter
 import com.nsoft.github.data.remote.calls.ApiCall
 import com.nsoft.github.data.remote.calls.ApiCalls
 import com.nsoft.github.data.remote.calls.QueriedApiCall
 import com.nsoft.github.data.remote.params.get_repositories.GetRepositoriesRequestParams
+import com.nsoft.github.data.remote.params.repository_details.GetRepositoryDetailsRequestParams
 import com.nsoft.github.data.repository.GitRepositoriesRepositoryImpl
 import com.nsoft.github.data.repository.TransitionalDataRepositoryImpl
 import com.nsoft.github.domain.model.GitRepositoriesList
+import com.nsoft.github.domain.model.RepositoryDetails
 import com.nsoft.github.domain.repository.GitRepositoriesRepository
 import com.nsoft.github.domain.repository.TransitionalDataRepository
 import dagger.Binds
@@ -115,6 +119,23 @@ object NetworkModule {
     ): ApiCall<GetRepositoriesRequestParams, GitRepositoriesList> {
         return QueriedApiCall(
             apiService::getRepositories,
+            requestAdapter,
+            responseAdapter
+        )
+    }
+
+    // This one most likely won't work but... lets give it a try
+    @Provides
+    @Named(ApiCalls.REPOSITORY_DETAILS)
+    @Singleton
+    fun provideGetRepositoryDetailsCall(
+        apiService: ApiService,
+        requestAdapter: GetRepositoryDetailsRequestAdapter,
+        responseAdapter: GetRepositoryDetailsResponseAdapter
+    ): ApiCall<GetRepositoryDetailsRequestParams, RepositoryDetails> {
+        // TODO likely will need some "dynamic url" call here
+        return QueriedApiCall(
+            apiService::getRepositoryDetails,
             requestAdapter,
             responseAdapter
         )

@@ -11,4 +11,5 @@ import javax.inject.Named
  */
 object ApiCalls {
     const val SEARCH_REPOSITORIES = "SEARCH_REPOSITORIES"
+    const val REPOSITORY_DETAILS = "REPOSITORY_DETAILS"
 }
