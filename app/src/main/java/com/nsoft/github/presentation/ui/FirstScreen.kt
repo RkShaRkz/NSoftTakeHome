@@ -76,7 +76,8 @@ fun FirstScreen(navController: NavHostController) {
                 GitRepoView(
                     useExtendedView = false,
                     gitRepoToShow = gitRepo,
-                    modifier = Modifier,
+                    modifier = Modifier
+                        .clickable { presenter.onItemClicked(gitRepo) },
                     favoritesButtonClick = { presenter.toggleFavoriteStatus(gitRepo) },
                     favoritesButtonComposable = {
                         val isFavorite by presenter.isFavoriteFlow(gitRepo)

@@ -95,6 +95,10 @@ class FirstScreenViewModel @Inject constructor(
         return gitReposRepository.isRepositoryFavorited(gitRepo)
     }
 
+    fun onItemClicked(gitRepo: GitRepository) {
+
+    }
+
     fun setFilterCriteria(filterString: String) {
         filterCriteria = filterString
         viewModelScope.launch {
