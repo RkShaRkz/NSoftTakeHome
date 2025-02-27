@@ -5,9 +5,6 @@ import com.nsoft.github.data.remote.adapters.ResponseAdapter
 import com.nsoft.github.data.remote.calls.ApiCall
 import com.nsoft.github.data.remote.calls.ApiCallType
 import com.nsoft.github.data.remote.calls.CallParams
-import com.nsoft.github.data.remote.calls.NormalApiCall
-import com.nsoft.github.data.remote.calls.PathApiCall
-import com.nsoft.github.data.remote.calls.QueriedApiCall
 import com.nsoft.github.data.remote.params.RequestParams
 import com.nsoft.github.domain.Outcome
 import com.nsoft.github.domain.exception.ApiException
@@ -164,7 +161,7 @@ abstract class NetworkingUseCase<
                             }
 
                             ApiCallType.LITERAL_URL -> {
-                                val targetUrl = convertedParams.third.get(CallParams.LiteralUrlParams.TARGET_URL_CONSTANT)
+                                val targetUrl = convertedParams.third[CallParams.LiteralUrlParams.TARGET_URL_CONSTANT]
                                 if (targetUrl != null) {
                                     val callParams = CallParams.LiteralUrlParams(
                                         targetUrl

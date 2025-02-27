@@ -187,7 +187,7 @@ data class LiteralUrlApiCall<NetworkParams : RequestParams, out DomainClass : Re
     private val retrofitCall: (String) -> Call<ResponseBody>,
     private val requestAdapter: RequestAdapter<NetworkParams>,
     private val responseAdapter: ResponseAdapter<DomainClass>
-): ApiCall<NetworkParams, DomainClass>(requestAdapter, responseAdapter, ApiCallType.QUERY) {
+): ApiCall<NetworkParams, DomainClass>(requestAdapter, responseAdapter, ApiCallType.LITERAL_URL) {
 
     override fun getCall(params: CallParams): Call<ResponseBody> {
         require(params is CallParams.LiteralUrlParams)
