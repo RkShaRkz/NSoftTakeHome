@@ -24,4 +24,9 @@ interface GitRepositoriesRepository {
     fun toggleRepositoryFavoriteStatus(repo: GitRepository)
 
     suspend fun toggleRepositoryFavoriteStatusSuspend(repo: GitRepository)
+
+    // The filtered variants
+    fun getAllRepositoriesFiltered(filterCriteria: String): Flow<List<GitRepository>>
+
+    suspend fun getAllRepositoriesFilteredSuspend(filterCriteria: String): List<GitRepository>
 }

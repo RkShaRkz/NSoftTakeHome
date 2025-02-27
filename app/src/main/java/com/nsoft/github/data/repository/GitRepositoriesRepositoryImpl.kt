@@ -1,20 +1,27 @@
 package com.nsoft.github.data.repository
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.util.fastAny
+import androidx.compose.ui.util.fastFilter
 import com.nsoft.github.data.local.room.dao.FavoriteDao
 import com.nsoft.github.data.local.room.dao.GitRepositoryDao
 import com.nsoft.github.domain.model.Favorite
 import com.nsoft.github.domain.model.GitRepository
 import com.nsoft.github.domain.repository.GitRepositoriesRepository
+import com.nsoft.github.util.FuzzyFilterer
+import com.nsoft.github.util.MyLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GitRepositoriesRepositoryImpl @Inject constructor(
     private val favoritesDao: FavoriteDao,
-    private val gitRepositoryDao: GitRepositoryDao
+    private val gitRepositoryDao: GitRepositoryDao,
+    private val textFilterer: FuzzyFilterer
 ): GitRepositoriesRepository {
     override fun getAllRepositories(): Flow<List<GitRepository>> {
         return gitRepositoryDao.getAllRepositoriesFlow()
@@ -101,5 +108,30 @@ class GitRepositoriesRepositoryImpl @Inject constructor(
         // get current status
         val currentFavStatus = isRepositoryFavoritedSuspend(repo)
         setRepositoryFavoritedSuspend(repo, !currentFavStatus)
+    }
+
+    override fun getAllRepositoriesFiltered(filterCriteria: String): Flow<List<GitRepository>> {
+        return getAllRepositories()
+            .map { repoList ->
+                // Now, reduce the list of git repos
+                repoList.filter { gitRepo ->
+                    textFilterer.matchesFuzzySearch(gitRepo.repoName, filterCriteria)
+                }
+            }
+            // Now, filter out the empty lists
+            .filter { list -> list.isNotEmpty() }
+    }
+
+    override suspend fun getAllRepositoriesFilteredSuspend(filterCriteria: String): List<GitRepository> {
+        val filteredRepos = getAllRepositoriesSuspend().filter { item ->
+            val match = textFilterer.matchesFuzzySearch(item.repoName, filterCriteria)
+//            MyLogger.d("SHARK", "text filter matches ? ${match}")
+
+            match
+        }
+
+//        MyLogger.d("SHARK", "[IN REPO] filtered repos count: ${filteredRepos.size}\tfiltered repos: ${filteredRepos}")
+
+        return filteredRepos
     }
 }
