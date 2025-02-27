@@ -54,8 +54,11 @@ fun FirstScreen(navController: NavHostController) {
     // The 'filter' input's text
     var filterText by remember { mutableStateOf("") }
 
-    // Tell the presenter to fetch the repos
-    presenter.getRepositories()
+    // Should run only once since the key will always be the same... i hope. Otherwise we'll think of something better.
+    LaunchedEffect(Unit) {
+        // Tell the presenter to fetch the repos
+        presenter.getRepositories()
+    }
 
     // And now, the UI code
     Column {

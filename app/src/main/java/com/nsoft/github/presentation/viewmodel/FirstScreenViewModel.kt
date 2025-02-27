@@ -8,6 +8,7 @@ import com.nsoft.github.domain.navigation.FirstScreenNavigationEvent
 import com.nsoft.github.domain.repository.GitRepositoriesRepository
 import com.nsoft.github.domain.usecase.GetRepositoriesUseCase
 import com.nsoft.github.domain.usecase.params.GetRepositoriesUseCaseParams
+import com.nsoft.github.util.MyLogger
 import com.nsoft.github.util.exhaustive
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -48,6 +49,7 @@ class FirstScreenViewModel @Inject constructor(
                     // which will publish new items which will then be observed by the UI through our StateFlow
                 } else {
                     val error = result.getError()
+                    MyLogger.e(LOGTAG, "Error happened! error: ${error}")
                     when (error) {
                         ApiException.EmptyResponse,
                         is ApiException.GeneralException,
@@ -77,5 +79,13 @@ class FirstScreenViewModel @Inject constructor(
 
     fun isFavoriteFlow(gitRepo: GitRepository): Flow<Boolean> {
         return gitReposRepository.isRepositoryFavorited(gitRepo)
+    }
+
+    fun setFilterCriteria(filterString: String) {
+        TODO("implement filtering")
+    }
+
+    companion object {
+        private const val LOGTAG = "FirstScreenViewModel"
     }
 }
