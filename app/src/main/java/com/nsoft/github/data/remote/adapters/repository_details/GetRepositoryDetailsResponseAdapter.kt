@@ -11,7 +11,7 @@ class GetRepositoryDetailsResponseAdapter @Inject constructor(
 
     override fun convert(rawJson: String): RepositoryDetails {
         MyLogger.e("GetRepositoryDetailsResponseAdapter", "rawJson = ${rawJson}")
-
+        //TODO
         return RepositoryDetails()
     }
 }
