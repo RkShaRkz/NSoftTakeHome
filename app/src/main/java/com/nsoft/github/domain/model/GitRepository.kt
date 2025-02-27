@@ -3,6 +3,7 @@ package com.nsoft.github.domain.model
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.nsoft.github.data.local.room.REPOSITORIES_PRIMARY_KEY
 import com.nsoft.github.data.local.room.REPOSITORIES_TABLE_NAME
@@ -11,9 +12,12 @@ import org.threeten.bp.Instant
 /**
  * A class that models a git repository, containing just what we need to show
  */
-@Entity(tableName = REPOSITORIES_TABLE_NAME)
+@Entity(
+    tableName = REPOSITORIES_TABLE_NAME,
+    indices = [Index(value = [REPOSITORIES_PRIMARY_KEY], unique = true)]
+)
 data class GitRepository(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true) val _databaseId: Int = 0,
     @ColumnInfo(name = REPOSITORIES_PRIMARY_KEY)
     val id: Long,
     @Embedded(prefix = "owner_")
