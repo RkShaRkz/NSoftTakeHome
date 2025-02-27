@@ -50,7 +50,7 @@ fun FirstScreen(navController: NavHostController) {
     HandleErrorEvents(errorEvent, presenter)
 
     // The 'filter' input's text
-    var filterText by remember { mutableStateOf("") }
+    var filterText by remember { mutableStateOf(presenter.getFilterCriteria()) }
 
     // And now, the UI code
     Column {

@@ -100,6 +100,11 @@ class FirstScreenViewModel @Inject constructor(
         _navigationStream.value = FirstScreenNavigationEvent.SECOND_SCREEN
     }
 
+    // We'll need this one when we come back to the first screen so return the current filter criteria
+    fun getFilterCriteria(): String {
+        return filterCriteria
+    }
+
     fun setFilterCriteria(filterString: String) {
         filterCriteria = filterString
         viewModelScope.launch {
