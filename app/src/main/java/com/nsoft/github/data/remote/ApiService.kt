@@ -16,8 +16,8 @@ interface ApiService {
     @GET("/search/repositories")
     fun getRepositories(@QueryMap queries: Map<String, String>, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
 
-//    @GET("/repos/{owner}/{name}")
-//    fun getRepositoryDetails(@Path("owner") owner: String,@Path("name") name: String): Call<ResponseBody>
-    @GET("/repos/")
-    fun getRepositoryDetails(@QueryMap queries: Map<String, String>, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
+    @GET("/repos/{owner}/{name}")
+    fun getRepositoryDetails(@Path("owner") owner: String,@Path("name") name: String): Call<ResponseBody>
+//    @GET("/repos/")
+//    fun getRepositoryDetails(@QueryMap queries: Map<String, String>, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
 }

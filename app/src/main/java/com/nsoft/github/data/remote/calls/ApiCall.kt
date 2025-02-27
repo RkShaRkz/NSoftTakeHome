@@ -45,7 +45,7 @@ data class NormalApiCall<NetworkParams : RequestParams, out DomainClass : Respon
  *
  * This class should be used as a "wrapper" around query-based API calls such as
  * ```
- * https://backend.com/endpoint/{queryParam}/...
+ * https://backend.com/endpoint?{queryParam}...
  * ```
  *
  * @param NetworkParams the concrete subclass of [RequestParams], parameters used for the networking call itself
@@ -66,6 +66,35 @@ data class QueriedApiCall<NetworkParams : RequestParams, out DomainClass : Respo
         return retrofitCall(params.query, params.headers)
     }
 }
+
+/**
+ * Base class for OUR wrapped version of the PATH Retrofit call which also contains it's
+ * [RequestAdapter] and [ResponseAdapter] bundled with it so that DI can do most of the magic.
+ *
+ * This class should be used as a "wrapper" around query-based API calls such as
+ * ```
+ * https://backend.com/endpoint/{queryParam1}/{queryParam2}/...
+ * ```
+ *
+ * @param NetworkParams the concrete subclass of [RequestParams], parameters used for the networking call itself
+ * @param DomainClass the actual domain class, subclass of [ResponseDomainData], that this call provides (extracts)
+ * from the networking response itself
+ *
+ * @see ApiCallType
+ */
+
+data class TwoPathApiCall<NetworkParams : RequestParams, out DomainClass : ResponseDomainData> @Inject constructor(
+    private val retrofitCall: (String, String) -> Call<ResponseBody>,
+    private val requestAdapter: RequestAdapter<NetworkParams>,
+    private val responseAdapter: ResponseAdapter<DomainClass>
+) : ApiCall<NetworkParams, DomainClass>(requestAdapter, responseAdapter, ApiCallType.PATH) {
+
+    override fun getCall(params: CallParams): Call<ResponseBody> {
+        require(params is CallParams.PathParams)
+        return retrofitCall(params.pathParams[0], params.pathParams[1])
+    }
+}
+
 
 /**
  * Base class for OUR wrapped version of the Retrofit call can *either* be a normal call or a queried call
@@ -111,15 +140,18 @@ sealed class ApiCall<NetworkParams : RequestParams, out DomainClass : ResponseDo
 /**
  * Enum class denoting the API call type - whether it's a "Query" API (an API call that also needs
  * to put in parameters as query parameters in the endpoint itself besides the header/values payload)
- * or a "Normal" API that just uses the header/values payload
+ * or a "Normal" API that just uses the header/values payload.
+ *
+ * A "Path" api is one that looks like https://www.backend.com/endpoint/path1/path2/...
  */
-enum class ApiCallType { QUERY, NORMAL }
+enum class ApiCallType { QUERY, NORMAL, PATH }
 
 /**
  * Sealed class for encapsulating parameters required for different API call types.
  *
  * @see NormalParams
  * @see QueriedParams
+ * @see PathParams
  */
 sealed class CallParams {
     /**
@@ -131,4 +163,9 @@ sealed class CallParams {
      * alongside their "query parameters" ([query]) which get appended to the endpoint itself
      */
     data class QueriedParams(val query: QueryMap, val headers: HeadersMap, val fields: FieldsMap) : CallParams()
+
+    /**
+     * "Path" params for "path" API calls which attach the elements of [pathParams] list into the endpoint itself
+     */
+    data class PathParams(val pathParams: List<String>) : CallParams()
 }

@@ -126,6 +126,21 @@ abstract class NetworkingUseCase<
                                     callParams
                                 ).execute()
                             }
+
+                            ApiCallType.PATH -> {
+                                // Ughhhhh this hack .....
+                                // The map doesn't preserve ordering. So, hopefully we get lucky by
+                                // taking the e.g. first map's values and hope they turn out alright
+                                //TODO sort them lexicographically then invert if this doesn't work out though ...
+                                val pathParams = convertedParams.first.values
+                                val callParams = CallParams.PathParams(
+                                    pathParams = pathParams.toList()
+                                )
+
+                                wrappedCall.getCall(
+                                    callParams
+                                ).execute()
+                            }
                         }.exhaustive
 
                     return@Callable if (response.isSuccessful) {
