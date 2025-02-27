@@ -18,8 +18,10 @@ import com.nsoft.github.data.remote.calls.ApiCalls
 import com.nsoft.github.data.remote.calls.QueriedApiCall
 import com.nsoft.github.data.remote.params.get_repositories.GetRepositoriesRequestParams
 import com.nsoft.github.data.repository.GitRepositoriesRepositoryImpl
+import com.nsoft.github.data.repository.TransitionalDataRepositoryImpl
 import com.nsoft.github.domain.model.GitRepositoriesList
 import com.nsoft.github.domain.repository.GitRepositoriesRepository
+import com.nsoft.github.domain.repository.TransitionalDataRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -67,6 +69,12 @@ abstract class BindingModule {
     abstract fun bindGitRepository(
         gitRepositoryImpl: GitRepositoriesRepositoryImpl
     ): GitRepositoriesRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindClickedGitRepoRepository(
+        transitionalDataRepositoryImpl: TransitionalDataRepositoryImpl
+    ): TransitionalDataRepository
 }
 
 @DisableInstallInCheck
