@@ -16,6 +16,10 @@ jacoco {
     toolVersion = libs.versions.jacoco.get()
 }
 
+// Needed for explicit byte-buddy-agent declaration so that Mockito doesn't implicitly add it
+// because that throws warnings ...
+val mockitoAgent = configurations.create("mockitoAgent")
+
 
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("android/key.properties")
@@ -93,6 +97,9 @@ composeCompiler {
 
 // Turn on test logging in console for all tasks of type "test"
 tasks.withType<Test> {
+    jvmArgs = listOf(
+        "-javaagent:${mockitoAgent.asPath}"
+    )
 
     testLogging {
         // Set options for log level LIFECYCLE
@@ -245,11 +252,23 @@ dependencies {
     // Timber
     implementation(libs.timber)
 
+    // Backported java.time features to lower APIs
+    implementation(libs.threetenabp)
+
+    // Image loading library coil-compose
+    implementation(libs.coil.compose)
+
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
     // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     testImplementation(libs.mockito.core)
+    mockitoAgent(libs.mockito.core) { isTransitive = false }
     testImplementation(libs.google.truth)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.core.testing)

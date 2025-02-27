@@ -1,11 +1,27 @@
 package com.nsoft.github.di
 
 import android.content.Context
+import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.nsoft.github.data.local.room.DATABASE_NAME
+import com.nsoft.github.data.local.room.Database
+import com.nsoft.github.data.local.room.dao.FavoriteRepositoryDao
+import com.nsoft.github.data.local.room.dao.GitRepositoryDao
 import com.nsoft.github.data.remote.ApiService
 import com.nsoft.github.data.remote.RetrofitClient
-import com.nsoft.github.domain.model.Clock
+import com.nsoft.github.data.remote.adapters.get_repositories.GetRepositoriesRequestAdapter
+import com.nsoft.github.data.remote.adapters.get_repositories.GetRepositoriesResponseAdapter
+import com.nsoft.github.data.remote.calls.ApiCall
+import com.nsoft.github.data.remote.calls.ApiCalls
+import com.nsoft.github.data.remote.calls.QueriedApiCall
+import com.nsoft.github.data.remote.params.get_repositories.GetRepositoriesRequestParams
+import com.nsoft.github.data.repository.GitRepositoriesRepositoryImpl
+import com.nsoft.github.data.repository.TransitionalDataRepositoryImpl
+import com.nsoft.github.domain.model.GitRepositoriesList
+import com.nsoft.github.domain.repository.GitRepositoriesRepository
+import com.nsoft.github.domain.repository.TransitionalDataRepository
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,7 +32,7 @@ import retrofit2.Retrofit
 import javax.inject.Named
 import javax.inject.Singleton
 
-@Module(includes = [BindingModule::class, NetworkModule::class])
+@Module(includes = [BindingModule::class, NetworkModule::class, RoomModule::class])
 @InstallIn(SingletonComponent::class)
 object AppModule {
     // We have transitioned from 'abstract class' since this module will be the "providing" module
@@ -47,7 +63,17 @@ abstract class BindingModule {
     // This module will remain 'abstract' since it will contain only abstract @Binding modules
     // which will be mixed-in with concrete @Provides methods via an include.
 
+    @Binds
+    @Singleton
+    abstract fun bindGitRepository(
+        gitRepositoryImpl: GitRepositoriesRepositoryImpl
+    ): GitRepositoriesRepository
 
+    @Binds
+    @Singleton
+    abstract fun bindClickedGitRepoRepository(
+        transitionalDataRepositoryImpl: TransitionalDataRepositoryImpl
+    ): TransitionalDataRepository
 }
 
 @DisableInstallInCheck
@@ -79,4 +105,44 @@ object NetworkModule {
      */
 
     //TODO implement github calls here
+    @Provides
+    @Named(ApiCalls.SEARCH_REPOSITORIES)
+    @Singleton
+    fun provideGetRepositoriesCall(
+        apiService: ApiService,
+        requestAdapter: GetRepositoriesRequestAdapter,
+        responseAdapter: GetRepositoriesResponseAdapter
+    ): ApiCall<GetRepositoriesRequestParams, GitRepositoriesList> {
+        return QueriedApiCall(
+            apiService::getRepositories,
+            requestAdapter,
+            responseAdapter
+        )
+    }
+}
+
+@DisableInstallInCheck
+@Module
+object RoomModule {
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext context: Context): Database {
+        return Room.databaseBuilder(
+            context = context,
+            klass = Database::class.java,
+            name = DATABASE_NAME
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideGitRepositoryDao(database: Database): GitRepositoryDao {
+        return database.gitRepositoryDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFavoritesRepositoryDao(database: Database): FavoriteRepositoryDao {
+        return database.favoriteRepositoryDao()
+    }
 }

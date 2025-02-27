@@ -12,5 +12,6 @@ import retrofit2.http.QueryMap
  * @see RetrofitClient.API_BASE_URL
  */
 interface ApiService {
-
+    @GET("/search/repositories")
+    fun getRepositories(@QueryMap queries: Map<String, String>, @HeaderMap headers: Map<String, String>): Call<ResponseBody>
 }
