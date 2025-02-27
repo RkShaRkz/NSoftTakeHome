@@ -20,7 +20,7 @@ import org.threeten.bp.Instant
     )],
     indices = [Index(FAVORITES_PRIMARY_KEY, unique = true)] // Ensure a repo can't be favorited twice
 )
-data class Favorite(
+data class FavoriteRepository(
     @PrimaryKey
     @ColumnInfo(name = FAVORITES_PRIMARY_KEY)
     val repoId: Long, // Matches GitRepository.id (from API)

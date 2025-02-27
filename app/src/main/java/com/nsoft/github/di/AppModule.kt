@@ -6,8 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.nsoft.github.data.local.room.DATABASE_NAME
 import com.nsoft.github.data.local.room.Database
-import com.nsoft.github.data.local.room.REPOSITORIES_TABLE_NAME
-import com.nsoft.github.data.local.room.dao.FavoriteDao
+import com.nsoft.github.data.local.room.dao.FavoriteRepositoryDao
 import com.nsoft.github.data.local.room.dao.GitRepositoryDao
 import com.nsoft.github.data.remote.ApiService
 import com.nsoft.github.data.remote.RetrofitClient
@@ -143,7 +142,7 @@ object RoomModule {
 
     @Provides
     @Singleton
-    fun provideFavoritesRepositoryDao(database: Database): FavoriteDao {
-        return database.favoritesDao()
+    fun provideFavoritesRepositoryDao(database: Database): FavoriteRepositoryDao {
+        return database.favoriteRepositoryDao()
     }
 }

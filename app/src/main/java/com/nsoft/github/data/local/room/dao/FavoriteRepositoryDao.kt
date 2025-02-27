@@ -7,37 +7,37 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.nsoft.github.data.local.room.FAVORITES_PRIMARY_KEY
 import com.nsoft.github.data.local.room.FAVORITES_TABLE_NAME
-import com.nsoft.github.domain.model.Favorite
+import com.nsoft.github.domain.model.FavoriteRepository
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface FavoriteDao {
+interface FavoriteRepositoryDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE) // Avoid duplicates
-    fun addFavorite(favorite: Favorite)
+    fun addFavoriteRepository(favoriteRepository: FavoriteRepository)
 
     @Query(
         "SELECT EXISTS(SELECT 1 FROM ${FAVORITES_TABLE_NAME} WHERE ${FAVORITES_PRIMARY_KEY} = :repoId)"
     )
-    fun isFavorite(repoId: Long): Flow<Boolean>
+    fun isFavoriteRepository(repoId: Long): Flow<Boolean>
 
     @Delete
-    fun removeFavorite(favorite: Favorite)
+    fun removeFavoriteRepository(favoriteRepository: FavoriteRepository)
 
     @Query("SELECT * FROM ${FAVORITES_TABLE_NAME}")
-    fun getAllFavorites(): Flow<List<Favorite>>
+    fun getAllFavoriteRepositories(): Flow<List<FavoriteRepository>>
 
     // now the suspend ones
     @Query(
         "SELECT EXISTS(SELECT 1 FROM ${FAVORITES_TABLE_NAME} WHERE ${FAVORITES_PRIMARY_KEY} = :repoId)"
     )
-    suspend fun isFavoriteSuspend(repoId: Long): Boolean
+    suspend fun isFavoriteRepositorySuspend(repoId: Long): Boolean
 
     @Insert(onConflict = OnConflictStrategy.IGNORE) // Avoid duplicates
-    suspend fun addFavoriteSuspend(favorite: Favorite)
+    suspend fun addFavoriteRepositorySuspend(favoriteRepository: FavoriteRepository)
 
     @Delete
-    suspend fun removeFavoriteSuspend(favorite: Favorite)
+    suspend fun removeFavoriteRepositorySuspend(favoriteRepository: FavoriteRepository)
 
     @Query("SELECT * FROM ${FAVORITES_TABLE_NAME}")
-    suspend fun getAllFavoritesSuspend(): List<Favorite>
+    suspend fun getAllFavoriteRepositoriesSuspend(): List<FavoriteRepository>
 }

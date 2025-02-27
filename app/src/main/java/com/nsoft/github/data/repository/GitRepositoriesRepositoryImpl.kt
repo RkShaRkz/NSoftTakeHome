@@ -1,15 +1,12 @@
 package com.nsoft.github.data.repository
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.util.fastAny
-import androidx.compose.ui.util.fastFilter
-import com.nsoft.github.data.local.room.dao.FavoriteDao
+import com.nsoft.github.data.local.room.dao.FavoriteRepositoryDao
 import com.nsoft.github.data.local.room.dao.GitRepositoryDao
-import com.nsoft.github.domain.model.Favorite
+import com.nsoft.github.domain.model.FavoriteRepository
 import com.nsoft.github.domain.model.GitRepository
 import com.nsoft.github.domain.repository.GitRepositoriesRepository
 import com.nsoft.github.util.FuzzyFilterer
-import com.nsoft.github.util.MyLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class GitRepositoriesRepositoryImpl @Inject constructor(
-    private val favoritesDao: FavoriteDao,
+    private val favoritesDao: FavoriteRepositoryDao,
     private val gitRepositoryDao: GitRepositoryDao,
     private val textFilterer: FuzzyFilterer
 ): GitRepositoriesRepository {
@@ -32,11 +29,11 @@ class GitRepositoriesRepositoryImpl @Inject constructor(
     }
 
     override fun isRepositoryFavorited(gitRepository: GitRepository): Flow<Boolean> {
-        return favoritesDao.isFavorite(gitRepository.id)
+        return favoritesDao.isFavoriteRepository(gitRepository.id)
     }
 
     override suspend fun isRepositoryFavoritedSuspend(gitRepository: GitRepository): Boolean {
-        return favoritesDao.isFavoriteSuspend(gitRepository.id)
+        return favoritesDao.isFavoriteRepositorySuspend(gitRepository.id)
     }
 
     /**
@@ -60,13 +57,13 @@ class GitRepositoriesRepositoryImpl @Inject constructor(
                 // Already favorite, do nothing
             } else {
                 // Add to favorites
-                favoritesDao.addFavoriteSuspend(Favorite(gitRepository.id))
+                favoritesDao.addFavoriteRepositorySuspend(FavoriteRepository(gitRepository.id))
             }
         } else {
             // Since we need to remove from favorites, check the current status
             if (isCurrentlyFavorite) {
                 // remove
-                favoritesDao.removeFavoriteSuspend(Favorite(gitRepository.id))
+                favoritesDao.removeFavoriteRepositorySuspend(FavoriteRepository(gitRepository.id))
             } else {
                 // already not favorite, do nothing
             }
