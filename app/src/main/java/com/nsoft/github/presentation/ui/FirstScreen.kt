@@ -31,7 +31,6 @@ import com.nsoft.github.presentation.composables.GenericLazyColumnWithOverscroll
 import com.nsoft.github.presentation.composables.GitRepoView
 import com.nsoft.github.presentation.composables.ShowAlertDialog
 import com.nsoft.github.presentation.viewmodel.FirstScreenViewModel
-import com.nsoft.github.util.MyLogger
 import com.nsoft.github.util.exhaustive
 
 @Composable
@@ -45,7 +44,6 @@ fun FirstScreen(navController: NavHostController) {
 
     // Start listening to viewmodel streams
     val repos by presenter.repositoryListStream.collectAsState()
-    MyLogger.d("SHARK", "[IN SCREEN] filtered repos count: ${repos.size}\tfiltered repos: ${repos}")
 
     // Handle navigation events
     HandleNavigationEvents(navigationEvents, navController, presenter)
@@ -53,12 +51,6 @@ fun FirstScreen(navController: NavHostController) {
 
     // The 'filter' input's text
     var filterText by remember { mutableStateOf("") }
-
-    // Should run only once since the key will always be the same... i hope. Otherwise we'll think of something better.
-    LaunchedEffect(Unit) {
-        // Tell the presenter to fetch the repos
-        presenter.getRepositories()
-    }
 
     // And now, the UI code
     Column {

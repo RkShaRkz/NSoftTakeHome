@@ -12,8 +12,10 @@ import com.nsoft.github.util.MyLogger
 import com.nsoft.github.util.exhaustive
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,16 +27,28 @@ class FirstScreenViewModel @Inject constructor(
 ): BaseViewModel<FirstScreenNavigationEvent, FirstScreenErrorState>() {
 
     private var nextPageToFetch = 1
+    private var filterCriteria = ""
 
     override fun initialNavigationStreamValue() = FirstScreenNavigationEvent.NOWHERE
     override fun initialErrorStreamValue() = FirstScreenErrorState.NoError
 
-    val repositoryListStream: StateFlow<List<GitRepository>> =
-        gitReposRepository.getAllRepositories().stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
+    var _repositoryListStream: MutableStateFlow<List<GitRepository>> =
+        MutableStateFlow<List<GitRepository>>(
+            emptyList()
         )
+    val repositoryListStream: StateFlow<List<GitRepository>> = _repositoryListStream.asStateFlow()
+
+    init {
+        // Get repos from API
+        getRepositories()
+        // Observe Room's StateFlow and update the inner MutableStateFlow
+        viewModelScope.launch {
+            gitReposRepository.getAllRepositoriesFiltered(filterCriteria)
+                .collect { newList ->
+                    _repositoryListStream.value = newList
+                }
+        }
+    }
 
     fun getRepositories() {
         viewModelScope.launch {
@@ -82,7 +96,17 @@ class FirstScreenViewModel @Inject constructor(
     }
 
     fun setFilterCriteria(filterString: String) {
-        TODO("implement filtering")
+        filterCriteria = filterString
+        viewModelScope.launch {
+            refreshInnerStream()
+        }
+    }
+
+    private suspend fun refreshInnerStream() {
+        gitReposRepository.getAllRepositoriesFiltered(filterCriteria)
+            .collect { newList ->
+                _repositoryListStream.value = newList
+            }
     }
 
     companion object {

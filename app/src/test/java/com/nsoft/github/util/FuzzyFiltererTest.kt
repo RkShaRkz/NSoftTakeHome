@@ -14,6 +14,15 @@ class FuzzyFiltererTest {
     }
 
     @Test
+    fun `test sqiare against square`() {
+        val actualName = "square"
+        val testName = "sqiare"
+        val result = fuzzyFilterer.matchesFuzzySearch(actualName, testName)
+
+        Truth.assertThat(result).isEqualTo(true)
+    }
+
+    @Test
     fun testLevenshteinDistanceExactMatch() {
         val s1 = "kitten"
         val s2 = "kitten"
