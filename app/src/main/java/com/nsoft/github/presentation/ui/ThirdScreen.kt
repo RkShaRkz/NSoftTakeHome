@@ -1,10 +1,15 @@
 package com.nsoft.github.presentation.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -14,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -22,6 +28,9 @@ import com.nsoft.github.R
 import com.nsoft.github.domain.model.ThirdScreenErrorState
 import com.nsoft.github.domain.navigation.FirstScreenNavigationEvent
 import com.nsoft.github.domain.navigation.ThirdScreenNavigationEvent
+import com.nsoft.github.presentation.composables.GenericLazyColumnWithOverscroll
+import com.nsoft.github.presentation.composables.GitCollaboratorView
+import com.nsoft.github.presentation.composables.GitRepoView
 import com.nsoft.github.presentation.composables.ShowAlertDialog
 import com.nsoft.github.presentation.viewmodel.FirstScreenViewModel
 import com.nsoft.github.presentation.viewmodel.ThirdScreenViewModel
@@ -83,13 +92,74 @@ fun ThirdScreen(navController: NavHostController) {
 @Composable
 fun Tab1Content() {
     // Content for Tab 1 - repos
-    Text("This is the content for Tab 1", modifier = Modifier.padding(dimensionResource(R.dimen.margin_double)))
+    // Get the viewmodel and start listening to the repo stream
+    val presenter: ThirdScreenViewModel = hiltViewModel<ThirdScreenViewModel>()
+    val repos by presenter.repositoryListStream.collectAsState()
+
+    // The repos recyclerview
+    GenericLazyColumnWithOverscroll(
+        onOverScrollCallback = { },
+        itemsList = repos,
+        itemComposable = { index, gitRepo ->
+            GitRepoView(
+                useExtendedView = false,
+                gitRepoToShow = gitRepo,
+                modifier = Modifier,
+                favoritesButtonComposable = {
+                    val isFavorite by presenter.isFavoriteRepositoryFlow(gitRepo)
+                        .collectAsState(initial = false)
+                    Icon(
+                        imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Favorite",
+                        modifier = Modifier
+                            .padding(dimensionResource(R.dimen.margin_single))  //was double
+                            .clickable {
+                                presenter.toggleRepositoryFavoriteStatus(gitRepo)
+                            }
+                    )
+                },
+            )
+        },
+        modifier = Modifier,
+        useDivider = true,
+        dividerThickness = dimensionResource(R.dimen.margin_single),
+        dividerColor = Color.Black
+    )
 }
 
 @Composable
 fun Tab2Content() {
     // Content for Tab 2 - contributors
-    Text("This is the content for Tab 2", modifier = Modifier.padding(dimensionResource(R.dimen.margin_double)))
+    // Get the viewmodel and start listening to the collab stream
+    val presenter: ThirdScreenViewModel = hiltViewModel<ThirdScreenViewModel>()
+    val collaborators by presenter.collaboratorsListStream.collectAsState()
+
+    // The repos recyclerview
+    GenericLazyColumnWithOverscroll(
+        onOverScrollCallback = { },
+        itemsList = collaborators,
+        itemComposable = { index, collaborator ->
+            GitCollaboratorView(
+                collaboratorToShow = collaborator,
+                modifier = Modifier,
+                favoritesButtonComposable = {
+                    val isFavorite by presenter.isFavoriteCollaborator(collaborator)
+                        .collectAsState(initial = false)
+                    Icon(imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        contentDescription = "Favorite",
+                        modifier = Modifier
+//                            .align(Alignment.CenterHorizontally)
+                            .clickable {
+                                presenter.toggleCollaboratorFavoriteStatus(collaborator)
+                            })
+                }
+            )
+        },
+        modifier = Modifier,
+        useDivider = true,
+        dividerThickness = dimensionResource(R.dimen.margin_single),
+        dividerColor = Color.Black
+    )
 }
 
 
