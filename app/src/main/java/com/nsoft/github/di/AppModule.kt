@@ -25,11 +25,13 @@ import com.nsoft.github.data.remote.calls.QueriedApiCall
 import com.nsoft.github.data.remote.params.get_collaborators.GetCollaboratorsRequestParams
 import com.nsoft.github.data.remote.params.get_repositories.GetRepositoriesRequestParams
 import com.nsoft.github.data.remote.params.repository_details.GetRepositoryDetailsRequestParams
+import com.nsoft.github.data.repository.GitCollaboratorsRepositoryImpl
 import com.nsoft.github.data.repository.GitRepositoriesRepositoryImpl
 import com.nsoft.github.data.repository.TransitionalDataRepositoryImpl
 import com.nsoft.github.domain.model.GitCollaboratorList
 import com.nsoft.github.domain.model.GitRepositoriesList
 import com.nsoft.github.domain.model.RepositoryDetails
+import com.nsoft.github.domain.repository.GitCollaboratorsRepository
 import com.nsoft.github.domain.repository.GitRepositoriesRepository
 import com.nsoft.github.domain.repository.TransitionalDataRepository
 import dagger.Binds
@@ -85,6 +87,12 @@ abstract class BindingModule {
     abstract fun bindClickedGitRepoRepository(
         transitionalDataRepositoryImpl: TransitionalDataRepositoryImpl
     ): TransitionalDataRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindGitCollaboratorsRepository(
+        gitCollaboratorsRepositoryImpl: GitCollaboratorsRepositoryImpl
+    ): GitCollaboratorsRepository
 }
 
 @DisableInstallInCheck

@@ -16,6 +16,10 @@ interface GitCollaboratorsRepository {
 
     suspend fun addFavoriteCollaboratorsSuspend(collaboratorList: List<GitCollaborator>)
 
+    fun addFavoriteCollaborator(collaborator: GitCollaborator)
+
+    suspend fun addFavoriteCollaboratorSuspend(collaborator: GitCollaborator)
+
     fun toggleCollaboratorFavoriteStatus(collaborator: GitCollaborator)
 
     suspend fun toggleCollaboratorFavoriteStatusSuspend(collaborator: GitCollaborator)

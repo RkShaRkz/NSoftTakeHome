@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.nsoft.github.data.local.room.COLLABORATORS_PRIMARY_KEY
 import com.nsoft.github.data.local.room.COLLABORATORS_TABLE_NAME
 import com.nsoft.github.domain.model.GitCollaborator
 import kotlinx.coroutines.flow.Flow
@@ -28,4 +29,10 @@ interface CollaboratorsDao {
 
     @Delete
     fun removeAll(gitCollaboratorList: List<GitCollaborator>)
+
+    @Query("SELECT * FROM ${COLLABORATORS_TABLE_NAME} WHERE ${COLLABORATORS_PRIMARY_KEY} = :id LIMIT 1")
+    fun getCollaboratorByIdFlow(id: Int): Flow<GitCollaborator?>
+
+    @Query("SELECT * FROM ${COLLABORATORS_TABLE_NAME} WHERE ${COLLABORATORS_PRIMARY_KEY} = :id LIMIT 1")
+    suspend fun getCollaboratorById(id: Int): GitCollaborator?
 }
