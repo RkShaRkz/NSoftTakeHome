@@ -15,5 +15,10 @@ enum class FirstScreenNavigationEvent {
     /**
      * Value representing that we should navigate to "second" screen
      */
-    SECOND_SCREEN
+    SECOND_SCREEN,
+
+    /**
+     * Value representing that we should navigate to "third" screen
+     */
+    THIRD_SCREEN
 }
