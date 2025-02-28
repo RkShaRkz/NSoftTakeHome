@@ -62,11 +62,6 @@ fun SecondScreen(navController: NavHostController) {
 
     val gitRepo = presenter.getClickedRepo()
     Column {
-        Row {
-            Button(
-                onClick = { presenter.getRepoDetails() }
-            ) { Text("Get Repo Details") }
-        }
         GitRepoView(
             useExtendedView = true,
             gitRepoToShow = gitRepo,

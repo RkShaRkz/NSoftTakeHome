@@ -44,7 +44,12 @@ class SecondScreenViewModel @Inject constructor(
         )
     val collaboratorsListStream: StateFlow<List<GitCollaborator>> = _collaboratorsListStream.asStateFlow()
 
-    fun getRepoDetails() {
+    init {
+        // Get repos from API
+        getRepoDetails()
+    }
+
+    private fun getRepoDetails() {
         viewModelScope.launch {
             // Get collaborators and contributors
 
