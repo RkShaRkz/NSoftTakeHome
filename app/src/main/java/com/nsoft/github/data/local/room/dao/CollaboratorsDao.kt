@@ -30,9 +30,23 @@ interface CollaboratorsDao {
     @Delete
     fun removeAll(gitCollaboratorList: List<GitCollaborator>)
 
-    @Query("SELECT * FROM ${COLLABORATORS_TABLE_NAME} WHERE ${COLLABORATORS_PRIMARY_KEY} = :id LIMIT 1")
-    fun getCollaboratorByIdFlow(id: Int): Flow<GitCollaborator?>
+    @Query(
+        "SELECT EXISTS(SELECT 1 FROM $COLLABORATORS_TABLE_NAME WHERE $COLLABORATORS_PRIMARY_KEY = :login)"
+    )
+    fun getCollaboratorByLoginFlow(login: String): Flow<Boolean>
 
-    @Query("SELECT * FROM ${COLLABORATORS_TABLE_NAME} WHERE ${COLLABORATORS_PRIMARY_KEY} = :id LIMIT 1")
-    suspend fun getCollaboratorById(id: Int): GitCollaborator?
+    @Query(
+        "SELECT EXISTS(SELECT 1 FROM $COLLABORATORS_TABLE_NAME WHERE $COLLABORATORS_PRIMARY_KEY = :login)"
+    )
+    suspend fun getCollaboratorByLoginSuspend(login: String): Boolean
+
+    @Query(
+        "SELECT EXISTS(SELECT 1 FROM $COLLABORATORS_TABLE_NAME WHERE ${COLLABORATORS_PRIMARY_KEY} = :login)"
+    )
+    fun doesCollaboratorExistsFlow(login: String): Flow<Boolean>
+
+    @Query(
+        "SELECT EXISTS(SELECT 1 FROM $COLLABORATORS_TABLE_NAME WHERE ${COLLABORATORS_PRIMARY_KEY} = :login)"
+    )
+    suspend fun doesCollaboratorExistsSuspend(login: String): Boolean
 }
