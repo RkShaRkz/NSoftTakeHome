@@ -21,3 +21,5 @@ public const val REPOSITORIES_PRIMARY_KEY = "id"
  * The primary key of the favorites table - "repoId"
  */
 public const val FAVORITES_PRIMARY_KEY = "repoId"
+
+public const val COLLABORATORS_TABLE_NAME = "collaborators_table"
