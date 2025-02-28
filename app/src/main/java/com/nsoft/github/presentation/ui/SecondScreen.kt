@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
@@ -23,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.nsoft.github.R
@@ -51,8 +49,9 @@ fun SecondScreen(navController: NavHostController) {
     val errorEvent by presenter.errorStream.collectAsState()
 
     // Start listening to viewmodel streams
+    val contributors by presenter.contributorsListStream.collectAsState()
     val collaborators by presenter.collaboratorsListStream.collectAsState()
-    MyLogger.e("SHARK", "collaborators size: ${collaborators.size}")
+    MyLogger.e("SHARK", "contributors size: ${contributors.size}\tcollaborators size: ${collaborators.size}")   //TODO remove
 
     // Handle navigation events
     HandleNavigationEvents(navigationEvents, navController, presenter)
@@ -87,7 +86,7 @@ fun SecondScreen(navController: NavHostController) {
                 LazyRow(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    itemsIndexed(collaborators) { index: Int, item: GitCollaborator ->
+                    itemsIndexed(contributors) { index: Int, item: GitCollaborator ->
                         GitCollaboratorView(
                             collaboratorToShow = item,
                             modifier = Modifier,
@@ -105,8 +104,30 @@ fun SecondScreen(navController: NavHostController) {
                         )
                     }
                 }
+            },
+            collaboratorsComposable = {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    itemsIndexed(collaborators) { index: Int, item: GitCollaborator ->
+                        GitCollaboratorView(
+                            collaboratorToShow = item,
+                            modifier = Modifier,
+                            favoritesButtonComposable = {
+                                val isFavorite by presenter.isFavoriteRepository(gitRepo)   //TODO change to isFavoriteCollaborator
+                                    .collectAsState(initial = false)
+                                Icon(imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                    contentDescription = "Favorite",
+                                    modifier = Modifier
+                                        .padding(dimensionResource(R.dimen.margin_single))  //was double
+                                        .clickable {
+                                            presenter.toggleFavoriteStatus(gitRepo) //TODO
+                                        })
+                            }
+                        )
+                    }
+                }
             }
-            //TODO collaborators too
         )
 
         /*

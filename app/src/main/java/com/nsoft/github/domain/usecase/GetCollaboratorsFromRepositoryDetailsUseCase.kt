@@ -3,6 +3,7 @@ package com.nsoft.github.domain.usecase
 import com.nsoft.github.domain.Outcome
 import com.nsoft.github.domain.exception.ApiException
 import com.nsoft.github.domain.model.GitCollaboratorList
+import com.nsoft.github.domain.usecase.params.CollaboratorType
 import com.nsoft.github.domain.usecase.params.GetCollaboratorsFromRepositoryDetailsUseCaseParams
 import com.nsoft.github.domain.usecase.params.GetCollaboratorsUseCaseParams
 import com.nsoft.github.domain.usecase.params.GetRepositoryDetailsUseCaseParams
@@ -25,8 +26,10 @@ class GetCollaboratorsFromRepositoryDetailsUseCase @Inject constructor(
             val getRepoDetailsResult = getRepoDetailsOutcome.getResult()
             val getCollaboratorsOutcome = getCollaboratorsUseCase.execute(
                 GetCollaboratorsUseCaseParams(
-//                    collaboratorsUrl = getRepoDetailsResult.collaboratorsUrl
-                    collaboratorsUrl = getRepoDetailsResult.contributorsUrl
+                    collaboratorsUrl = when(params.collaboratorType){
+                        CollaboratorType.GET_COLLABORATORS -> getRepoDetailsResult.collaboratorsUrl
+                        CollaboratorType.GET_CONTRIBUTORS -> getRepoDetailsResult.contributorsUrl
+                    }
                 )
             )
 

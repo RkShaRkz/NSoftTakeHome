@@ -9,6 +9,7 @@ import com.nsoft.github.domain.navigation.SecondScreenNavigationEvent
 import com.nsoft.github.domain.repository.GitRepositoriesRepository
 import com.nsoft.github.domain.repository.TransitionalDataRepository
 import com.nsoft.github.domain.usecase.GetCollaboratorsFromRepositoryDetailsUseCase
+import com.nsoft.github.domain.usecase.params.CollaboratorType
 import com.nsoft.github.domain.usecase.params.GetCollaboratorsFromRepositoryDetailsUseCaseParams
 import com.nsoft.github.util.exhaustive
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,6 +30,12 @@ class SecondScreenViewModel @Inject constructor(
     override fun initialNavigationStreamValue() = SecondScreenNavigationEvent.NOWHERE
     override fun initialErrorStreamValue() = SecondScreenErrorState.NoError
 
+    private var _contributorsListStream: MutableStateFlow<List<GitCollaborator>> =
+        MutableStateFlow<List<GitCollaborator>>(
+            emptyList()
+        )
+    val contributorsListStream: StateFlow<List<GitCollaborator>> = _contributorsListStream.asStateFlow()
+
     private var _collaboratorsListStream: MutableStateFlow<List<GitCollaborator>> =
         MutableStateFlow<List<GitCollaborator>>(
             emptyList()
@@ -37,10 +44,31 @@ class SecondScreenViewModel @Inject constructor(
 
     fun getRepoDetails() {
         viewModelScope.launch {
+            // Get collaborators and contributors
+
+            // contributors
             getCollaboratorsFromRepositoryDetailsUseCase.executeSuspendWithCallback(
                 GetCollaboratorsFromRepositoryDetailsUseCaseParams(
                     owner = transitionalDataRepository.getClickedGitRepo().owner.login,
-                    name = transitionalDataRepository.getClickedGitRepo().repoName
+                    name = transitionalDataRepository.getClickedGitRepo().repoName,
+                    collaboratorType = CollaboratorType.GET_CONTRIBUTORS
+                )
+            ) { collaboratorsFromRepoDetailsOutcome ->
+                if (collaboratorsFromRepoDetailsOutcome.isSuccessful()) {
+                    val collaborators = collaboratorsFromRepoDetailsOutcome.getResult()
+                    _contributorsListStream.value = collaborators.collaborators
+                } else {
+                    val error = collaboratorsFromRepoDetailsOutcome.getError()
+                    handleCollaboratorError(error)
+                }
+            }
+
+            // collaborators
+            getCollaboratorsFromRepositoryDetailsUseCase.executeSuspendWithCallback(
+                GetCollaboratorsFromRepositoryDetailsUseCaseParams(
+                    owner = transitionalDataRepository.getClickedGitRepo().owner.login,
+                    name = transitionalDataRepository.getClickedGitRepo().repoName,
+                    collaboratorType = CollaboratorType.GET_COLLABORATORS
                 )
             ) { collaboratorsFromRepoDetailsOutcome ->
                 if (collaboratorsFromRepoDetailsOutcome.isSuccessful()) {
@@ -48,17 +76,7 @@ class SecondScreenViewModel @Inject constructor(
                     _collaboratorsListStream.value = collaborators.collaborators
                 } else {
                     val error = collaboratorsFromRepoDetailsOutcome.getError()
-                    when(error) {
-                        ApiException.EmptyResponse,
-                        is ApiException.GeneralException,
-                        is ApiException.NetworkException,
-                        is ApiException.ServerException,
-                        is ApiException.UnauthorizedException,
-                        is ApiException.UnexpectedException -> {
-                            _errorStream.value = SecondScreenErrorState.UnknownErrorHappened
-                        }
-                        ApiException.NoInternetException -> _errorStream.value = SecondScreenErrorState.NoInternet
-                    }.exhaustive
+                    handleCollaboratorError(error)
                 }
             }
         }
@@ -83,6 +101,20 @@ class SecondScreenViewModel @Inject constructor(
 
     fun getDestinationUrlString(): String {
         return transitionalDataRepository.getClickedUrl()
+    }
+
+    private fun handleCollaboratorError(error: ApiException) {
+        when(error) {
+            ApiException.EmptyResponse,
+            is ApiException.GeneralException,
+            is ApiException.NetworkException,
+            is ApiException.ServerException,
+            is ApiException.UnauthorizedException,
+            is ApiException.UnexpectedException -> {
+                _errorStream.value = SecondScreenErrorState.UnknownErrorHappened
+            }
+            ApiException.NoInternetException -> _errorStream.value = SecondScreenErrorState.NoInternet
+        }.exhaustive
     }
 
     companion object {
