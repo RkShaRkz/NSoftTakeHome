@@ -131,14 +131,6 @@ private fun HandleNavigationEvents(
                 // We do nothing here, since this value is mostly just a "just in case" placeholder
             }
 
-            SecondScreenNavigationEvent.THIRD_SCREEN -> {
-                // We navigate back to the home screen, clearing up the backstack
-                navController.navigate(NavigationRoutes.THIRD_SCREEN.getRouteName()) {
-                    //TODO decide on this one later when you see how the app actually works out and whether this makes sense
-//                    popUpTo(NavigationRoutes.THIRD_SCREEN.getRouteName()) { inclusive = true }
-                }
-            }
-
             SecondScreenNavigationEvent.PROJECT_URL -> {
                 val url = UriMaker.createUri(presenter.getDestinationUrlString())
                 val intent = Intent(Intent.ACTION_VIEW, url)

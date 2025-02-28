@@ -13,11 +13,6 @@ enum class SecondScreenNavigationEvent {
     NOWHERE,
 
     /**
-     * Value representing that we should navigate to "third" screen
-     */
-    THIRD_SCREEN,
-
-    /**
      * Value representing that we should navigate to repository's html_url
      */
     PROJECT_URL
