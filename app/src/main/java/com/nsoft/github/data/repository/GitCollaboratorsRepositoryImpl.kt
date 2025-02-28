@@ -6,7 +6,6 @@ import com.nsoft.github.domain.repository.GitCollaboratorsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,16 +21,12 @@ class GitCollaboratorsRepositoryImpl @Inject constructor(
     }
 
     override fun isCollaboratorFavorited(gitCollaborator: GitCollaborator): Flow<Boolean> {
-        // This one is a bit more complicated; since Room doesn't quite have a "contains"
-        // so we'll run the get 0 or 1, and decide based on the result
         return collaboratorsDao
-            .getCollaboratorByIdFlow(gitCollaborator._databaseId)
-            .map { gitCollaboratorItem -> if (gitCollaboratorItem != null) { true } else { false } }
+            .doesCollaboratorExistsFlow(gitCollaborator.login)
     }
 
     override suspend fun isCollaboratorFavoritedSuspend(gitCollaborator: GitCollaborator): Boolean {
-        val item = collaboratorsDao.getCollaboratorById(gitCollaborator._databaseId)
-        return if (item != null) { true } else { false }
+        return collaboratorsDao.doesCollaboratorExistsSuspend(gitCollaborator.login)
     }
 
     override fun addFavoriteCollaborators(collaboratorList: List<GitCollaborator>) {
@@ -61,15 +56,15 @@ class GitCollaboratorsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun toggleCollaboratorFavoriteStatusSuspend(collaborator: GitCollaborator) {
-        // This one is easy. If collaborator is alreadfy 'favored' (meaning he's in the database)
+        // This one is easy. If collaborator is already 'favored' (meaning he's in the database)
         // we'll remove him, otherwise we'll just add him. This one is simpler than what we had in
         // the GitReposRepositories
         val isItemFavorite = isCollaboratorFavoritedSuspend(collaborator)
         if (isItemFavorite) {
-            // remove
-            collaboratorsDao.remove(collaborator)
+            // remove - since removal returns an int, we can keep it unused for debugging purposes
+            val removedRows = collaboratorsDao.removeByLogin(collaborator.login)
         } else {
-            // add
+            // add - since adding *does not* return anything, we don't need to keep the retVal
             collaboratorsDao.insert(collaborator)
         }
     }

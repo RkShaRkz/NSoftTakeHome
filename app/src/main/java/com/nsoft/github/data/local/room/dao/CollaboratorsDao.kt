@@ -24,11 +24,11 @@ interface CollaboratorsDao {
     @Query("SELECT * FROM ${COLLABORATORS_TABLE_NAME}")
     fun getAllCollaboratorsFlow(): Flow<List<GitCollaborator>>
 
-    @Delete
-    fun remove(gitCollaborator: GitCollaborator)
+    @Query("DELETE FROM ${COLLABORATORS_TABLE_NAME} WHERE ${COLLABORATORS_PRIMARY_KEY} = :login")
+    suspend fun removeByLogin(login: String): Int
 
-    @Delete
-    fun removeAll(gitCollaboratorList: List<GitCollaborator>)
+    @Query("DELETE FROM ${COLLABORATORS_TABLE_NAME} WHERE ${COLLABORATORS_PRIMARY_KEY} IN (:loginList)")
+    suspend fun removeAllByLogin(loginList: List<String>): Int
 
     @Query(
         "SELECT EXISTS(SELECT 1 FROM $COLLABORATORS_TABLE_NAME WHERE $COLLABORATORS_PRIMARY_KEY = :login)"

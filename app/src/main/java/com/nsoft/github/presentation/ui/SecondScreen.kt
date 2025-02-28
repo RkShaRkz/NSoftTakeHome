@@ -94,14 +94,14 @@ fun SecondScreen(navController: NavHostController) {
                             collaboratorToShow = item,
                             modifier = Modifier,
                             favoritesButtonComposable = {
-                                val isFavorite by presenter.isFavoriteRepository(gitRepo)   //TODO change to isFavoriteCollaborator
+                                val isFavorite by presenter.isFavoriteCollaborator(item)
                                     .collectAsState(initial = false)
                                 Icon(imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                                     contentDescription = "Favorite",
                                     modifier = Modifier
                                         .align(Alignment.CenterHorizontally)
                                         .clickable {
-                                            presenter.toggleFavoriteStatus(gitRepo) //TODO change to favoritesRepository
+                                            presenter.toggleCollaboratorFavoriteStatus(item)
                                         })
                             }
                         )

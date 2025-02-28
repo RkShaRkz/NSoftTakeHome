@@ -6,6 +6,7 @@ import com.nsoft.github.domain.model.GitCollaborator
 import com.nsoft.github.domain.model.GitRepository
 import com.nsoft.github.domain.model.SecondScreenErrorState
 import com.nsoft.github.domain.navigation.SecondScreenNavigationEvent
+import com.nsoft.github.domain.repository.GitCollaboratorsRepository
 import com.nsoft.github.domain.repository.GitRepositoriesRepository
 import com.nsoft.github.domain.repository.TransitionalDataRepository
 import com.nsoft.github.domain.usecase.GetCollaboratorsFromRepositoryDetailsUseCase
@@ -23,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SecondScreenViewModel @Inject constructor(
     private val gitReposRepository: GitRepositoriesRepository,
+    private val collaboratorsRepository: GitCollaboratorsRepository,
     private val transitionalDataRepository: TransitionalDataRepository,
     private val getCollaboratorsFromRepositoryDetailsUseCase: GetCollaboratorsFromRepositoryDetailsUseCase
 ): BaseViewModel<SecondScreenNavigationEvent, SecondScreenErrorState>() {
@@ -84,6 +86,14 @@ class SecondScreenViewModel @Inject constructor(
 
     fun getDestinationUrlString(): String {
         return transitionalDataRepository.getClickedUrl()
+    }
+
+    fun isFavoriteCollaborator(gitCollaborator: GitCollaborator): Flow<Boolean> {
+        return collaboratorsRepository.isCollaboratorFavorited(gitCollaborator)
+    }
+
+    fun toggleCollaboratorFavoriteStatus(gitCollaborator: GitCollaborator) {
+        collaboratorsRepository.toggleCollaboratorFavoriteStatus(gitCollaborator)
     }
 
     private fun handleCollaboratorError(error: ApiException) {
