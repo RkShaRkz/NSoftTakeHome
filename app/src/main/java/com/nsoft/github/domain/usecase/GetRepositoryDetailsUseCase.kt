@@ -27,8 +27,7 @@ class GetRepositoryDetailsUseCase @Inject constructor(
         result: RepositoryDetails,
         rawJson: String
     ): Outcome<RepositoryDetails, ApiException> {
-        //TODO
-        return Outcome.successfulOutcome(RepositoryDetails())
+        return Outcome.successfulOutcome(result)
     }
 
     override fun onFailure(
