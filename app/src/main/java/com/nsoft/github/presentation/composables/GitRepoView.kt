@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -136,12 +137,12 @@ fun GitRepoView(
 //                    rightText = gitRepoToShow.contributorsUrl,
 //                    spaceBetweenTexts = dimensionResource(R.dimen.margin_double),
 //                )
-                Row(
+                Column(
                     modifier = Modifier
                         .then(modifier)
                 ) {
                     Text("Contributors URL:")
-                    Spacer(modifier = Modifier.width(dimensionResource(R.dimen.margin_double)))
+                    Spacer(modifier = Modifier.height(dimensionResource(R.dimen.margin_single)))
                     contributorsComposable()
                 }
                 // colaborators
@@ -150,12 +151,15 @@ fun GitRepoView(
 //                    rightText = gitRepoToShow.collaboratorsUrl,
 //                    spaceBetweenTexts = dimensionResource(R.dimen.margin_double),
 //                )
-                Row(
+                Column(
                     modifier = Modifier
                         .then(modifier)
                 ) {
                     Text("Collaborators URL:")
-                    Spacer(modifier = Modifier.width(dimensionResource(R.dimen.margin_double)))
+                    Spacer(modifier = Modifier
+                        .height(dimensionResource(R.dimen.margin_double))
+//                        .width(dimensionResource(R.dimen.margin_double))
+                    )
                     collaboratorsComposable()
                 }
             }

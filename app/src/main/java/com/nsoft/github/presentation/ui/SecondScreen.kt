@@ -38,6 +38,7 @@ import com.nsoft.github.presentation.composables.GitRepoView
 import com.nsoft.github.presentation.composables.ShowAlertDialog
 import com.nsoft.github.presentation.viewmodel.FirstScreenViewModel
 import com.nsoft.github.presentation.viewmodel.SecondScreenViewModel
+import com.nsoft.github.util.MyLogger
 import com.nsoft.github.util.exhaustive
 
 @Composable
@@ -51,6 +52,7 @@ fun SecondScreen(navController: NavHostController) {
 
     // Start listening to viewmodel streams
     val collaborators by presenter.collaboratorsListStream.collectAsState()
+    MyLogger.e("SHARK", "collaborators size: ${collaborators.size}")
 
     // Handle navigation events
     HandleNavigationEvents(navigationEvents, navController, presenter)
@@ -88,11 +90,7 @@ fun SecondScreen(navController: NavHostController) {
                     itemsIndexed(collaborators) { index: Int, item: GitCollaborator ->
                         GitCollaboratorView(
                             collaboratorToShow = item,
-                            modifier = Modifier
-                                .size(
-                                    width = 45.dp,
-                                    height = 45.dp
-                                ),
+                            modifier = Modifier,
                             favoritesButtonComposable = {
                                 val isFavorite by presenter.isFavoriteRepository(gitRepo)   //TODO change to isFavoriteCollaborator
                                     .collectAsState(initial = false)
