@@ -1,6 +1,5 @@
 package com.nsoft.github.data.repository
 
-import android.net.Uri
 import com.nsoft.github.domain.model.GitRepository
 import com.nsoft.github.domain.repository.TransitionalDataRepository
 import javax.inject.Inject
@@ -20,7 +19,6 @@ class TransitionalDataRepositoryImpl @Inject constructor(
     }
 
     override fun setClickedUrl(url: String) {
-//        clickedUrl = Uri.parse(url)
         clickedUrl = url
     }
 

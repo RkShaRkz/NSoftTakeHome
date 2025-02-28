@@ -91,7 +91,7 @@ class FirstScreenViewModel @Inject constructor(
         gitReposRepository.toggleRepositoryFavoriteStatus(gitRepo)
     }
 
-    fun isFavoriteRepository(gitRepo: GitRepository): Flow<Boolean> {
+    fun isFavoriteRepositoryFlow(gitRepo: GitRepository): Flow<Boolean> {
         return gitReposRepository.isRepositoryFavorited(gitRepo)
     }
 

@@ -3,18 +3,14 @@ package com.nsoft.github.presentation.ui
 import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.nsoft.github.R
@@ -32,14 +27,12 @@ import com.nsoft.github.data.local.UriMaker
 import com.nsoft.github.domain.model.GitCollaborator
 import com.nsoft.github.domain.model.SecondScreenErrorState
 import com.nsoft.github.domain.navigation.FirstScreenNavigationEvent
-import com.nsoft.github.domain.navigation.NavigationRoutes
 import com.nsoft.github.domain.navigation.SecondScreenNavigationEvent
 import com.nsoft.github.presentation.composables.GitCollaboratorView
 import com.nsoft.github.presentation.composables.GitRepoView
 import com.nsoft.github.presentation.composables.ShowAlertDialog
 import com.nsoft.github.presentation.viewmodel.FirstScreenViewModel
 import com.nsoft.github.presentation.viewmodel.SecondScreenViewModel
-import com.nsoft.github.util.MyLogger
 import com.nsoft.github.util.exhaustive
 
 @Composable
@@ -54,7 +47,6 @@ fun SecondScreen(navController: NavHostController) {
     // Start listening to viewmodel streams
     val contributors by presenter.contributorsListStream.collectAsState()
     val collaborators by presenter.collaboratorsListStream.collectAsState()
-    MyLogger.e("SHARK", "contributors size: ${contributors.size}\tcollaborators size: ${collaborators.size}")   //TODO remove
 
     // Handle navigation events
     HandleNavigationEvents(navigationEvents, navController, presenter)
