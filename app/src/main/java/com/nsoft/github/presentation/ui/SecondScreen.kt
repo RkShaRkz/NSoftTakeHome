@@ -59,7 +59,6 @@ fun SecondScreen(navController: NavHostController) {
             useExtendedView = true,
             gitRepoToShow = gitRepo,
             modifier = Modifier,
-            favoritesButtonClick = { presenter.toggleFavoriteStatus(gitRepo) },
             favoritesButtonComposable = {
                 val isFavorite by presenter.isFavoriteRepository(gitRepo)
                     .collectAsState(initial = false)
@@ -75,6 +74,22 @@ fun SecondScreen(navController: NavHostController) {
             },
             openUrlButtonClick = { presenter.onUrlButtonClicked(gitRepo) }
         )
+
+        /*
+        {
+                        val isFavorite by presenter.isFavoriteRepository(gitRepo)
+                            .collectAsState(initial = false)
+                        Icon(
+                            imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = "Favorite",
+                            modifier = Modifier
+                                .padding(dimensionResource(R.dimen.margin_single))  //was double
+                                .clickable {
+                                    presenter.toggleFavoriteStatus(gitRepo)
+                                }
+                        )
+                    }
+         */
     }
 }
 

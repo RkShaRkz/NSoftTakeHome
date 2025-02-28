@@ -78,7 +78,6 @@ fun FirstScreen(navController: NavHostController) {
                     gitRepoToShow = gitRepo,
                     modifier = Modifier
                         .clickable { presenter.onItemClicked(gitRepo) },
-                    favoritesButtonClick = { presenter.toggleFavoriteStatus(gitRepo) },
                     favoritesButtonComposable = {
                         val isFavorite by presenter.isFavoriteRepository(gitRepo)
                             .collectAsState(initial = false)
@@ -92,9 +91,6 @@ fun FirstScreen(navController: NavHostController) {
                                 }
                         )
                     },
-                    openUrlButtonClick = {
-                        // Nothing, not only is this part of the "extended" view, but it's not a feature of the first screen
-                    }
                 )
             },
             modifier = Modifier,

@@ -25,7 +25,8 @@ class GetCollaboratorsFromRepositoryDetailsUseCase @Inject constructor(
             val getRepoDetailsResult = getRepoDetailsOutcome.getResult()
             val getCollaboratorsOutcome = getCollaboratorsUseCase.execute(
                 GetCollaboratorsUseCaseParams(
-                    collaboratorsUrl = getRepoDetailsResult.collaboratorsUrl
+//                    collaboratorsUrl = getRepoDetailsResult.collaboratorsUrl
+                    collaboratorsUrl = getRepoDetailsResult.contributorsUrl
                 )
             )
 

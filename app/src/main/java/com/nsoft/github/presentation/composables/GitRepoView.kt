@@ -3,8 +3,11 @@ package com.nsoft.github.presentation.composables
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,9 +26,10 @@ fun GitRepoView(
     useExtendedView: Boolean = false,
     gitRepoToShow: GitRepository,
     modifier: Modifier = Modifier,
-    favoritesButtonClick: () -> Unit,
     favoritesButtonComposable: @Composable () -> Unit,
-    openUrlButtonClick: () -> Unit,
+    openUrlButtonClick: () -> Unit = {},
+    contributorsComposable: @Composable () -> Unit = {},
+    collaboratorsComposable: @Composable () -> Unit = {}
 ) {
     // Ok, so the idea is:
     // avater on the left, followed by a bunch of lines on the right
@@ -125,18 +129,35 @@ fun GitRepoView(
                     rightText = gitRepoToShow.updatedAt.formatToPattern(PATTERN_DDMMYYYYatHHMM),
                     spaceBetweenTexts = dimensionResource(R.dimen.margin_double),
                 )
+                // For these two, lets not use this, since we need to render images ...
                 // contributors url
-                SideBySideTexts(
-                    leftText = "Contributors URL:",
-                    rightText = gitRepoToShow.contributorsUrl,
-                    spaceBetweenTexts = dimensionResource(R.dimen.margin_double),
-                )
+//                SideBySideTexts(
+//                    leftText = "Contributors URL:",
+//                    rightText = gitRepoToShow.contributorsUrl,
+//                    spaceBetweenTexts = dimensionResource(R.dimen.margin_double),
+//                )
+                Row(
+                    modifier = Modifier
+                        .then(modifier)
+                ) {
+                    Text("Contributors URL:")
+                    Spacer(modifier = Modifier.width(dimensionResource(R.dimen.margin_double)))
+                    contributorsComposable()
+                }
                 // colaborators
-                SideBySideTexts(
-                    leftText = "Collaborators URL:",
-                    rightText = gitRepoToShow.collaboratorsUrl,
-                    spaceBetweenTexts = dimensionResource(R.dimen.margin_double),
-                )
+//                SideBySideTexts(
+//                    leftText = "Collaborators URL:",
+//                    rightText = gitRepoToShow.collaboratorsUrl,
+//                    spaceBetweenTexts = dimensionResource(R.dimen.margin_double),
+//                )
+                Row(
+                    modifier = Modifier
+                        .then(modifier)
+                ) {
+                    Text("Collaborators URL:")
+                    Spacer(modifier = Modifier.width(dimensionResource(R.dimen.margin_double)))
+                    collaboratorsComposable()
+                }
             }
 
             // Now, the two buttons
