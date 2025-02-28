@@ -62,23 +62,6 @@ class SecondScreenViewModel @Inject constructor(
                     handleCollaboratorError(error)
                 }
             }
-
-            // collaborators
-            getCollaboratorsFromRepositoryDetailsUseCase.executeSuspendWithCallback(
-                GetCollaboratorsFromRepositoryDetailsUseCaseParams(
-                    owner = transitionalDataRepository.getClickedGitRepo().owner.login,
-                    name = transitionalDataRepository.getClickedGitRepo().repoName,
-                    collaboratorType = CollaboratorType.GET_COLLABORATORS
-                )
-            ) { collaboratorsFromRepoDetailsOutcome ->
-                if (collaboratorsFromRepoDetailsOutcome.isSuccessful()) {
-                    val collaborators = collaboratorsFromRepoDetailsOutcome.getResult()
-                    _collaboratorsListStream.value = collaborators.collaborators
-                } else {
-                    val error = collaboratorsFromRepoDetailsOutcome.getError()
-                    handleCollaboratorError(error)
-                }
-            }
         }
     }
 

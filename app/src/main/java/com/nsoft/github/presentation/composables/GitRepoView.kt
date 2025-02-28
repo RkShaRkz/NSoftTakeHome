@@ -30,7 +30,6 @@ fun GitRepoView(
     favoritesButtonComposable: @Composable () -> Unit,
     openUrlButtonClick: () -> Unit = {},
     contributorsComposable: @Composable () -> Unit = {},
-    collaboratorsComposable: @Composable () -> Unit = {}
 ) {
     // Ok, so the idea is:
     // avater on the left, followed by a bunch of lines on the right
@@ -130,13 +129,7 @@ fun GitRepoView(
                     rightText = gitRepoToShow.updatedAt.formatToPattern(PATTERN_DDMMYYYYatHHMM),
                     spaceBetweenTexts = dimensionResource(R.dimen.margin_double),
                 )
-                // For these two, lets not use this, since we need to render images ...
-                // contributors url
-//                SideBySideTexts(
-//                    leftText = "Contributors URL:",
-//                    rightText = gitRepoToShow.contributorsUrl,
-//                    spaceBetweenTexts = dimensionResource(R.dimen.margin_double),
-//                )
+                // For these two, lets not use the SideBySideTexts, since we need to render images ...
                 Column(
                     modifier = Modifier
                         .then(modifier)
@@ -144,40 +137,30 @@ fun GitRepoView(
                     Text("Contributors URL:")
                     Spacer(modifier = Modifier.height(dimensionResource(R.dimen.margin_single)))
                     contributorsComposable()
-                }
-                // colaborators
-//                SideBySideTexts(
-//                    leftText = "Collaborators URL:",
-//                    rightText = gitRepoToShow.collaboratorsUrl,
-//                    spaceBetweenTexts = dimensionResource(R.dimen.margin_double),
-//                )
-                Column(
-                    modifier = Modifier
-                        .then(modifier)
-                ) {
-                    Text("Collaborators URL:")
-                    Spacer(modifier = Modifier
-                        .height(dimensionResource(R.dimen.margin_double))
-//                        .width(dimensionResource(R.dimen.margin_double))
+                    // And add another spacer so it looks better when the collaborators are loaded
+                    Spacer(
+                        modifier = Modifier
+                            .height(dimensionResource(R.dimen.margin_single))
                     )
-                    collaboratorsComposable()
                 }
             }
 
             // Now, the two buttons
             // one for adding/removing the repo to list of favorites
             // and the second one - available only in extended view - for opening the html_url
-            Box {
-                // Instead of a button, lets let the caller provide the whole composable to be
-                // used for clicking instead
-                favoritesButtonComposable()
-            }
+            Row {
+                Box {
+                    // Instead of a button, lets let the caller provide the whole composable to be
+                    // used for clicking instead
+                    favoritesButtonComposable()
+                }
 
-            if (useExtendedView) {
-                Button(
-                    onClick = openUrlButtonClick,
-                ) {
-                    Text(text = stringResource(R.string.open))
+                if (useExtendedView) {
+                    Button(
+                        onClick = openUrlButtonClick,
+                    ) {
+                        Text(text = stringResource(R.string.open))
+                    }
                 }
             }
         }
