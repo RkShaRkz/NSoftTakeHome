@@ -9,6 +9,8 @@ import com.nsoft.github.domain.navigation.FirstScreenNavigationEvent
 import com.nsoft.github.domain.navigation.SecondScreenNavigationEvent
 import com.nsoft.github.domain.navigation.ThirdScreenNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,4 +21,10 @@ class ThirdScreenViewModel @Inject constructor(
     override fun initialNavigationStreamValue() = ThirdScreenNavigationEvent.NOWHERE
     override fun initialErrorStreamValue() = ThirdScreenErrorState.NoError
 
+    private val _selectedTabIndex = MutableStateFlow(0)
+    val selectedTabIndex = _selectedTabIndex.asStateFlow()
+
+    fun onTabSelected(index: Int) {
+        _selectedTabIndex.value = index
+    }
 }

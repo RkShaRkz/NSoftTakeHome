@@ -1,9 +1,20 @@
 package com.nsoft.github.presentation.ui
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -16,6 +27,7 @@ import com.nsoft.github.presentation.viewmodel.FirstScreenViewModel
 import com.nsoft.github.presentation.viewmodel.ThirdScreenViewModel
 import com.nsoft.github.util.exhaustive
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ThirdScreen(navController: NavHostController) {
     // Initialize values we'll need and be using for this screen
@@ -26,10 +38,58 @@ fun ThirdScreen(navController: NavHostController) {
     val errorEvent by presenter.errorStream.collectAsState()
 
     // Start listening to viewmodel streams
+    val selectedTabIndex = presenter.selectedTabIndex.collectAsState()
 
     // Handle navigation events
     HandleNavigationEvents(navigationEvents, navController, presenter)
     HandleErrorEvents(errorEvent, presenter)
+
+    // Followed by the UI code
+    val tabs = listOf(stringResource(R.string.repositories), stringResource(R.string.contributors))
+
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        modifier = Modifier,
+                        text = stringResource(R.string.favorites))
+                }
+            )
+        }
+    ) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(it)) {
+            TabRow(selectedTabIndex = selectedTabIndex.value) {
+                tabs.forEachIndexed { index, title ->
+                    Tab(
+                        text = { Text(title) },
+                        selected = selectedTabIndex.value == index,
+                        onClick = {
+                                presenter.onTabSelected(index)
+                        }
+                    )
+                }
+            }
+            when (selectedTabIndex.value) {
+                0 -> Tab1Content()
+                1 -> Tab2Content()
+            }
+        }
+    }
+}
+
+@Composable
+fun Tab1Content() {
+    // Content for Tab 1 - repos
+    Text("This is the content for Tab 1", modifier = Modifier.padding(dimensionResource(R.dimen.margin_double)))
+}
+
+@Composable
+fun Tab2Content() {
+    // Content for Tab 2 - contributors
+    Text("This is the content for Tab 2", modifier = Modifier.padding(dimensionResource(R.dimen.margin_double)))
 }
 
 

@@ -5,4 +5,7 @@
     <string name="no_internet_available">No internet available!</string>
     <string name="whoops_something_went_wrong">Whoops, something went wrong!</string>
     <string name="open">Open</string>
+    <string name="favorites">Favorites</string>
+    <string name="repositories">Repositories</string>
+    <string name="contributors">Contributors</string>
 </resources>
