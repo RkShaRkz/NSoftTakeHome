@@ -4,7 +4,11 @@ import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -19,14 +23,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.nsoft.github.R
 import com.nsoft.github.data.local.UriMaker
+import com.nsoft.github.domain.model.GitCollaborator
 import com.nsoft.github.domain.model.SecondScreenErrorState
 import com.nsoft.github.domain.navigation.FirstScreenNavigationEvent
 import com.nsoft.github.domain.navigation.NavigationRoutes
 import com.nsoft.github.domain.navigation.SecondScreenNavigationEvent
+import com.nsoft.github.presentation.composables.GitCollaboratorView
 import com.nsoft.github.presentation.composables.GitRepoView
 import com.nsoft.github.presentation.composables.ShowAlertDialog
 import com.nsoft.github.presentation.viewmodel.FirstScreenViewModel
@@ -43,6 +50,7 @@ fun SecondScreen(navController: NavHostController) {
     val errorEvent by presenter.errorStream.collectAsState()
 
     // Start listening to viewmodel streams
+    val collaborators by presenter.collaboratorsListStream.collectAsState()
 
     // Handle navigation events
     HandleNavigationEvents(navigationEvents, navController, presenter)
@@ -72,7 +80,35 @@ fun SecondScreen(navController: NavHostController) {
                         }
                 )
             },
-            openUrlButtonClick = { presenter.onUrlButtonClicked(gitRepo) }
+            openUrlButtonClick = { presenter.onUrlButtonClicked(gitRepo) },
+            contributorsComposable = {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    itemsIndexed(collaborators) { index: Int, item: GitCollaborator ->
+                        GitCollaboratorView(
+                            collaboratorToShow = item,
+                            modifier = Modifier
+                                .size(
+                                    width = 45.dp,
+                                    height = 45.dp
+                                ),
+                            favoritesButtonComposable = {
+                                val isFavorite by presenter.isFavoriteRepository(gitRepo)   //TODO change to isFavoriteCollaborator
+                                    .collectAsState(initial = false)
+                                Icon(imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                    contentDescription = "Favorite",
+                                    modifier = Modifier
+                                        .padding(dimensionResource(R.dimen.margin_single))  //was double
+                                        .clickable {
+                                            presenter.toggleFavoriteStatus(gitRepo)
+                                        })
+                            }
+                        )
+                    }
+                }
+            }
+            //TODO collaborators too
         )
 
         /*

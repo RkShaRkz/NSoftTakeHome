@@ -2,6 +2,7 @@ package com.nsoft.github.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.nsoft.github.domain.exception.ApiException
+import com.nsoft.github.domain.model.GitCollaborator
 import com.nsoft.github.domain.model.GitRepository
 import com.nsoft.github.domain.model.SecondScreenErrorState
 import com.nsoft.github.domain.navigation.SecondScreenNavigationEvent
@@ -12,6 +13,9 @@ import com.nsoft.github.domain.usecase.params.GetCollaboratorsFromRepositoryDeta
 import com.nsoft.github.util.exhaustive
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,6 +29,12 @@ class SecondScreenViewModel @Inject constructor(
     override fun initialNavigationStreamValue() = SecondScreenNavigationEvent.NOWHERE
     override fun initialErrorStreamValue() = SecondScreenErrorState.NoError
 
+    private var _collaboratorsListStream: MutableStateFlow<List<GitCollaborator>> =
+        MutableStateFlow<List<GitCollaborator>>(
+            emptyList()
+        )
+    val collaboratorsListStream: StateFlow<List<GitCollaborator>> = _collaboratorsListStream.asStateFlow()
+
     fun getRepoDetails() {
         viewModelScope.launch {
             getCollaboratorsFromRepositoryDetailsUseCase.executeSuspendWithCallback(
@@ -35,6 +45,7 @@ class SecondScreenViewModel @Inject constructor(
             ) { collaboratorsFromRepoDetailsOutcome ->
                 if (collaboratorsFromRepoDetailsOutcome.isSuccessful()) {
                     val collaborators = collaboratorsFromRepoDetailsOutcome.getResult()
+                    _collaboratorsListStream.value = collaborators.collaborators
                 } else {
                     val error = collaboratorsFromRepoDetailsOutcome.getError()
                     when(error) {
