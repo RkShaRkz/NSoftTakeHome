@@ -42,7 +42,10 @@ fun GitCollaboratorView(
                 .height(dimensionResource(R.dimen.margin_single))
         )
 
-        Text(text = collaboratorToShow.login)
+        Text(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = collaboratorToShow.login
+        )
 
         Spacer(
             modifier = Modifier

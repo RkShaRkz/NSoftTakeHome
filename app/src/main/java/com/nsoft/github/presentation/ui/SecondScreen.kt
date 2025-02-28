@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -98,6 +99,7 @@ fun SecondScreen(navController: NavHostController) {
                                 Icon(imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                                     contentDescription = "Favorite",
                                     modifier = Modifier
+                                        .align(Alignment.CenterHorizontally)
                                         .clickable {
                                             presenter.toggleFavoriteStatus(gitRepo) //TODO change to favoritesRepository
                                         })
