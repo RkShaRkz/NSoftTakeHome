@@ -40,6 +40,11 @@ class ThirdScreenViewModel @Inject constructor(
         )
     val collaboratorsListStream: StateFlow<List<GitCollaborator>> = _collaboratorsListStream.asStateFlow()
 
+    init {
+        // init selected tab's view
+        onTabSelected(_selectedTabIndex.value)
+    }
+
     fun onTabSelected(index: Int) {
         _selectedTabIndex.value = index
         when (index) {
