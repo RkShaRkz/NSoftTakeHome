@@ -47,7 +47,7 @@ data class NormalApiCall<NetworkParams : RequestParams, out DomainClass : Respon
  *
  * This class should be used as a "wrapper" around query-based API calls such as
  * ```
- * https://backend.com/endpoint?{queryParam}...
+ * https://backend.com/endpoint?{queryParam1=queryParam1Value}&{queryParam2=queryParam2Value}..
  * ```
  *
  * @param NetworkParams the concrete subclass of [RequestParams], parameters used for the networking call itself
@@ -73,15 +73,17 @@ data class QueriedApiCall<NetworkParams : RequestParams, out DomainClass : Respo
  * Base class for OUR wrapped version of the PATH Retrofit call which also contains it's
  * [RequestAdapter] and [ResponseAdapter] bundled with it so that DI can do most of the magic.
  *
- * This class should be used as a "wrapper" around query-based API calls such as
+ * This class should be used as a "wrapper" around path-based API calls such as
  * ```
- * https://backend.com/endpoint/{queryParam1}/{queryParam2}/...
+ * https://backend.com/endpoint/{pathParam1}/{pathParam2}/...
  * ```
  *
  * **IMPORTANT NOTE:** to comply with the rest of the [ApiCall] definition, this call will take it's
  * path (see [Path]) parameters from the **third** map ([QueryMap]) returned by the [RequestAdapter.convert],
- * and put them in the order they were in the order that is returned by [Map.values]. For more details
- * also see [NetworkingUseCase] portion that references [ApiCallType.PATH]
+ * but to preserve ordering, the RequestAdapter should put them in the map with [PathApiCallConstants] keys.
+ *
+ * For more details also see [NetworkingUseCase] portion that references [ApiCallType.PATH]
+ *
  *
  * @param NetworkParams the concrete subclass of [RequestParams], parameters used for the networking call itself
  * @param DomainClass the actual domain class, subclass of [ResponseDomainData], that this call provides (extracts)
@@ -286,5 +288,20 @@ sealed class CallParams {
         companion object {
             public const val TARGET_URL_CONSTANT = "url"
         }
+    }
+}
+
+class PathApiCallConstants {
+    companion object {
+        public const val PATH_PARAM1_KEY = "pathParam1"
+        public const val PATH_PARAM2_KEY = "pathParam2"
+        public const val PATH_PARAM3_KEY = "pathParam3"
+        public const val PATH_PARAM4_KEY = "pathParam4"
+        public const val PATH_PARAM5_KEY = "pathParam5"
+        public const val PATH_PARAM6_KEY = "pathParam6"
+        public const val PATH_PARAM7_KEY = "pathParam7"
+        public const val PATH_PARAM8_KEY = "pathParam8"
+        public const val PATH_PARAM9_KEY = "pathParam9"
+        public const val PATH_PARAM10_KEY = "pathParam10"
     }
 }

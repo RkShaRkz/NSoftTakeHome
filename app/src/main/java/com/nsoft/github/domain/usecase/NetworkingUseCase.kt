@@ -1,10 +1,12 @@
 package com.nsoft.github.domain.usecase
 
 import com.nsoft.github.data.local.NetworkUtils
+import com.nsoft.github.data.remote.adapters.QueryMap
 import com.nsoft.github.data.remote.adapters.ResponseAdapter
 import com.nsoft.github.data.remote.calls.ApiCall
 import com.nsoft.github.data.remote.calls.ApiCallType
 import com.nsoft.github.data.remote.calls.CallParams
+import com.nsoft.github.data.remote.calls.PathApiCallConstants
 import com.nsoft.github.data.remote.params.RequestParams
 import com.nsoft.github.domain.Outcome
 import com.nsoft.github.domain.exception.ApiException
@@ -128,13 +130,9 @@ abstract class NetworkingUseCase<
                             }
 
                             ApiCallType.PATH -> {
-                                // Ughhhhh this hack .....
-                                // The map doesn't preserve ordering. So, hopefully we get lucky by
-                                // taking the e.g. query map's values and hope they turn out alright
-                                //TODO sort them lexicographically then invert if this doesn't work out though ...
-                                val pathParams = convertedParams.third.values
+                                val pathParamsList = extractPathParamsListFromMap(convertedParams.third)
                                 val callParams = CallParams.PathParams(
-                                    pathParams = pathParams.toList()
+                                    pathParams = pathParamsList
                                 )
 
                                 // Obviously, only PATH calls are going to be here, so we can just go ahead
@@ -192,6 +190,42 @@ abstract class NetworkingUseCase<
             // If there is no internet, just return NoInternetException
             return handleError(ApiException.NoInternetException)
         }
+    }
+
+    private fun extractPathParamsListFromMap(queryMapContainingPathParams: QueryMap): List<String> {
+        val retVal = mutableListOf<String>()
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM1_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM2_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM3_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM4_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM5_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM6_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM7_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM8_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM9_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM10_KEY]?.let {
+            retVal.add(it)
+        }
+
+        return retVal.toList()
     }
 
     /**

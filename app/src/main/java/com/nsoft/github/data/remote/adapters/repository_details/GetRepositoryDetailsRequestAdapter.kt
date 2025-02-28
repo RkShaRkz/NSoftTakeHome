@@ -4,6 +4,7 @@ import com.nsoft.github.data.remote.adapters.FieldsMap
 import com.nsoft.github.data.remote.adapters.HeadersMap
 import com.nsoft.github.data.remote.adapters.QueryMap
 import com.nsoft.github.data.remote.adapters.RequestAdapter
+import com.nsoft.github.data.remote.calls.PathApiCallConstants
 import com.nsoft.github.data.remote.params.repository_details.GetRepositoryDetailsRequestParams
 import javax.inject.Inject
 
@@ -16,8 +17,8 @@ class GetRepositoryDetailsRequestAdapter @Inject constructor(
         val headers = emptyMap<String, String>()
         val fields = emptyMap<String, String>()
         val queries = mapOf<String, String>(
-            OWNER to params.owner,
-            NAME to params.name
+            PathApiCallConstants.PATH_PARAM1_KEY to params.owner,
+            PathApiCallConstants.PATH_PARAM2_KEY to params.name
         )
 
         return Triple(headers, fields, queries)
