@@ -1,10 +1,12 @@
 package com.nsoft.github.domain.usecase
 
 import com.nsoft.github.data.local.NetworkUtils
+import com.nsoft.github.data.remote.adapters.QueryMap
 import com.nsoft.github.data.remote.adapters.ResponseAdapter
 import com.nsoft.github.data.remote.calls.ApiCall
 import com.nsoft.github.data.remote.calls.ApiCallType
 import com.nsoft.github.data.remote.calls.CallParams
+import com.nsoft.github.data.remote.calls.PathApiCallConstants
 import com.nsoft.github.data.remote.params.RequestParams
 import com.nsoft.github.domain.Outcome
 import com.nsoft.github.domain.exception.ApiException
@@ -126,6 +128,50 @@ abstract class NetworkingUseCase<
                                     callParams
                                 ).execute()
                             }
+
+                            ApiCallType.PATH -> {
+                                val pathParamsList = extractPathParamsListFromMap(convertedParams.third)
+                                val callParams = CallParams.PathParams(
+                                    pathParams = pathParamsList
+                                )
+
+                                // Obviously, only PATH calls are going to be here, so we can just go ahead
+                                // and call it with the list of parameters. However, if finer-grained
+                                // control ever becomes needed, do uncomment this part below and do
+                                // what is necessary there ...
+                                /*
+                                when (wrappedCall) {
+                                    is PathApiCall -> {
+                                        when (wrappedCall) {
+                                            is PathApiCall.OnePathElementsApiCall -> TODO()
+                                            is PathApiCall.ThreePathElementsApiCall -> TODO()
+                                            is PathApiCall.TwoPathElementsApiCall -> TODO()
+                                        }.exhaustive
+                                    }
+                                    is NormalApiCall,
+                                    is QueriedApiCall -> {/* can't happen here, so is of no concern */}
+                                }.exhaustive
+                                 */
+
+                                wrappedCall.getCall(
+                                    callParams
+                                ).execute()
+                            }
+
+                            ApiCallType.LITERAL_URL -> {
+                                val targetUrl = convertedParams.third[CallParams.LiteralUrlParams.TARGET_URL_CONSTANT]
+                                if (targetUrl != null) {
+                                    val callParams = CallParams.LiteralUrlParams(
+                                        targetUrl
+                                    )
+
+                                    wrappedCall.getCall(
+                                        callParams
+                                    ).execute()
+                                } else {
+                                    throw IllegalStateException("The URL must be passed by using the CallParams.LiteralUrlParams.TARGET_URL_CONSTANT in the QueryMap returned by the RequestAdapter !!!")
+                                }
+                            }
                         }.exhaustive
 
                     return@Callable if (response.isSuccessful) {
@@ -144,6 +190,42 @@ abstract class NetworkingUseCase<
             // If there is no internet, just return NoInternetException
             return handleError(ApiException.NoInternetException)
         }
+    }
+
+    private fun extractPathParamsListFromMap(queryMapContainingPathParams: QueryMap): List<String> {
+        val retVal = mutableListOf<String>()
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM1_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM2_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM3_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM4_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM5_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM6_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM7_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM8_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM9_KEY]?.let {
+            retVal.add(it)
+        }
+        queryMapContainingPathParams[PathApiCallConstants.PATH_PARAM10_KEY]?.let {
+            retVal.add(it)
+        }
+
+        return retVal.toList()
     }
 
     /**

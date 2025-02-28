@@ -23,6 +23,7 @@ data class GitRepository(
     @Embedded(prefix = "owner_")
     val owner: GitRepositoryOwner,
     val repoName: String,
+    val fullRepoName: String,
     val description: String,
     val language: String,
     val stargazersCount: Int,

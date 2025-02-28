@@ -1,17 +1,35 @@
 package com.nsoft.github.presentation.ui
 
+import android.content.Intent
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.nsoft.github.R
+import com.nsoft.github.data.local.UriMaker
+import com.nsoft.github.domain.model.GitCollaborator
 import com.nsoft.github.domain.model.SecondScreenErrorState
 import com.nsoft.github.domain.navigation.FirstScreenNavigationEvent
-import com.nsoft.github.domain.navigation.NavigationRoutes
 import com.nsoft.github.domain.navigation.SecondScreenNavigationEvent
+import com.nsoft.github.presentation.composables.GitCollaboratorView
+import com.nsoft.github.presentation.composables.GitRepoView
 import com.nsoft.github.presentation.composables.ShowAlertDialog
 import com.nsoft.github.presentation.viewmodel.FirstScreenViewModel
 import com.nsoft.github.presentation.viewmodel.SecondScreenViewModel
@@ -27,10 +45,58 @@ fun SecondScreen(navController: NavHostController) {
     val errorEvent by presenter.errorStream.collectAsState()
 
     // Start listening to viewmodel streams
+    val contributors by presenter.contributorsListStream.collectAsState()
+    val collaborators by presenter.collaboratorsListStream.collectAsState()
 
     // Handle navigation events
     HandleNavigationEvents(navigationEvents, navController, presenter)
     HandleErrorEvents(errorEvent, presenter)
+
+    val gitRepo = presenter.getClickedRepo()
+    Column {
+        GitRepoView(
+            useExtendedView = true,
+            gitRepoToShow = gitRepo,
+            modifier = Modifier,
+            favoritesButtonComposable = {
+                val isFavorite by presenter.isFavoriteRepository(gitRepo)
+                    .collectAsState(initial = false)
+                Icon(
+                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Favorite",
+                    modifier = Modifier
+                        .padding(dimensionResource(R.dimen.margin_single))  //was double
+                        .clickable {
+                            presenter.toggleFavoriteStatus(gitRepo)
+                        }
+                )
+            },
+            openUrlButtonClick = { presenter.onUrlButtonClicked(gitRepo) },
+            contributorsComposable = {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    itemsIndexed(contributors) { index: Int, item: GitCollaborator ->
+                        GitCollaboratorView(
+                            collaboratorToShow = item,
+                            modifier = Modifier,
+                            favoritesButtonComposable = {
+                                val isFavorite by presenter.isFavoriteCollaborator(item)
+                                    .collectAsState(initial = false)
+                                Icon(imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                    contentDescription = "Favorite",
+                                    modifier = Modifier
+                                        .align(Alignment.CenterHorizontally)
+                                        .clickable {
+                                            presenter.toggleCollaboratorFavoriteStatus(item)
+                                        })
+                            }
+                        )
+                    }
+                }
+            }
+        )
+    }
 }
 
 
@@ -50,18 +116,17 @@ private fun HandleNavigationEvents(
     navController: NavHostController,
     presenter: SecondScreenViewModel
 ) {
+    val context = LocalContext.current
     LaunchedEffect(navigationEvents) {
         when (navigationEvents) {
             SecondScreenNavigationEvent.NOWHERE -> {
                 // We do nothing here, since this value is mostly just a "just in case" placeholder
             }
 
-            SecondScreenNavigationEvent.THIRD_SCREEN -> {
-                // We navigate back to the home screen, clearing up the backstack
-                navController.navigate(NavigationRoutes.THIRD_SCREEN.getRouteName()) {
-                    //TODO decide on this one later when you see how the app actually works out and whether this makes sense
-//                    popUpTo(NavigationRoutes.THIRD_SCREEN.getRouteName()) { inclusive = true }
-                }
+            SecondScreenNavigationEvent.PROJECT_URL -> {
+                val url = UriMaker.createUri(presenter.getDestinationUrlString())
+                val intent = Intent(Intent.ACTION_VIEW, url)
+                context.startActivity(intent)
             }
         }.exhaustive
         // And tell the presenter we're done navigating so it can clear the last navigation value

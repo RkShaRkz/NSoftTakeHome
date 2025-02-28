@@ -8,6 +8,7 @@ class TransitionalDataRepositoryImpl @Inject constructor(
     // Since we're not even gonna use sharedpref for this, lets just keep the values in memory
 ): TransitionalDataRepository {
     private lateinit var clickedGitRepo: GitRepository
+    private lateinit var clickedUrl: String
 
     override fun setClickedGitRepo(gitRepository: GitRepository) {
         clickedGitRepo = gitRepository
@@ -15,5 +16,13 @@ class TransitionalDataRepositoryImpl @Inject constructor(
 
     override fun getClickedGitRepo(): GitRepository {
         return clickedGitRepo
+    }
+
+    override fun setClickedUrl(url: String) {
+        clickedUrl = url
+    }
+
+    override fun getClickedUrl(): String {
+        return clickedUrl
     }
 }

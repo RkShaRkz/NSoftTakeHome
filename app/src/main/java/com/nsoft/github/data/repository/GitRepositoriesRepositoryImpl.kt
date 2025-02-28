@@ -112,7 +112,7 @@ class GitRepositoriesRepositoryImpl @Inject constructor(
             .map { repoList ->
                 // Now, reduce the list of git repos
                 repoList.filter { gitRepo ->
-                    textFilterer.matchesFuzzySearch(gitRepo.repoName, filterCriteria)
+                    textFilterer.matchesFuzzySearch(gitRepo.fullRepoName, filterCriteria)
                 }
             }
             // Now, filter out the empty lists
@@ -121,7 +121,7 @@ class GitRepositoriesRepositoryImpl @Inject constructor(
 
     override suspend fun getAllRepositoriesFilteredSuspend(filterCriteria: String): List<GitRepository> {
         val filteredRepos = getAllRepositoriesSuspend().filter { item ->
-            val match = textFilterer.matchesFuzzySearch(item.repoName, filterCriteria)
+            val match = textFilterer.matchesFuzzySearch(item.fullRepoName, filterCriteria)
 //            MyLogger.d("SHARK", "text filter matches ? ${match}")
 
             match

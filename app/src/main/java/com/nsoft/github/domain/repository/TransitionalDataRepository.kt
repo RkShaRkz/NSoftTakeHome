@@ -9,4 +9,7 @@ import com.nsoft.github.domain.model.GitRepository
 interface TransitionalDataRepository {
     fun setClickedGitRepo(gitRepository: GitRepository)
     fun getClickedGitRepo(): GitRepository
+
+    fun setClickedUrl(url: String)
+    fun getClickedUrl(): String
 }

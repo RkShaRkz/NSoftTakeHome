@@ -2,6 +2,7 @@ package com.nsoft.github
 
 import android.app.Application
 import android.content.Context
+import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
@@ -13,6 +14,7 @@ class NSoftApplication : Application() {
         instance = this
 
         Timber.plant(Timber.DebugTree())
+        AndroidThreeTen.init(this)
     }
 
     companion object {

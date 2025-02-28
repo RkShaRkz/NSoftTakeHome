@@ -25,7 +25,8 @@ class GetRepositoriesResponseAdapter @Inject constructor(
                         avatarUrl = repo.owner.avatarUrl,
                         htmlUrl = repo.owner.htmlUrl
                     ),
-                    repoName = repo.fullName,
+                    repoName = repo.name,
+                    fullRepoName = repo.fullName,
                     description = repo.description,
                     language = repo.language,
                     stargazersCount = repo.stargazersCount,
