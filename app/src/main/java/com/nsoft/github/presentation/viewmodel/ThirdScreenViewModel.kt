@@ -28,14 +28,14 @@ class ThirdScreenViewModel @Inject constructor(
     private val _selectedTabIndex = MutableStateFlow(0)
     val selectedTabIndex = _selectedTabIndex.asStateFlow()
 
-    var _repositoryListStream: MutableStateFlow<List<GitRepository>> =
-        MutableStateFlow<List<GitRepository>>(
+    private var _repositoryListStream: MutableStateFlow<List<GitRepository>> =
+        MutableStateFlow(
             emptyList()
         )
     val repositoryListStream: StateFlow<List<GitRepository>> = _repositoryListStream.asStateFlow()
 
-    var _collaboratorsListStream: MutableStateFlow<List<GitCollaborator>> =
-        MutableStateFlow<List<GitCollaborator>>(
+    private var _collaboratorsListStream: MutableStateFlow<List<GitCollaborator>> =
+        MutableStateFlow(
             emptyList()
         )
     val collaboratorsListStream: StateFlow<List<GitCollaborator>> = _collaboratorsListStream.asStateFlow()

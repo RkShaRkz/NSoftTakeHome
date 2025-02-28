@@ -32,8 +32,8 @@ class FirstScreenViewModel @Inject constructor(
     override fun initialNavigationStreamValue() = FirstScreenNavigationEvent.NOWHERE
     override fun initialErrorStreamValue() = FirstScreenErrorState.NoError
 
-    var _repositoryListStream: MutableStateFlow<List<GitRepository>> =
-        MutableStateFlow<List<GitRepository>>(
+    private var _repositoryListStream: MutableStateFlow<List<GitRepository>> =
+        MutableStateFlow(
             emptyList()
         )
     val repositoryListStream: StateFlow<List<GitRepository>> = _repositoryListStream.asStateFlow()
@@ -50,7 +50,7 @@ class FirstScreenViewModel @Inject constructor(
         }
     }
 
-    fun getRepositories() {
+    private fun getRepositories() {
         viewModelScope.launch {
             getRepositoriesUseCase.executeSuspendWithCallback(
                 GetRepositoriesUseCaseParams(

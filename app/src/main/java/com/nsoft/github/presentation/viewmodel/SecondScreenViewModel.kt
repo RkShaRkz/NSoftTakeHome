@@ -33,13 +33,13 @@ class SecondScreenViewModel @Inject constructor(
     override fun initialErrorStreamValue() = SecondScreenErrorState.NoError
 
     private var _contributorsListStream: MutableStateFlow<List<GitCollaborator>> =
-        MutableStateFlow<List<GitCollaborator>>(
+        MutableStateFlow(
             emptyList()
         )
     val contributorsListStream: StateFlow<List<GitCollaborator>> = _contributorsListStream.asStateFlow()
 
     private var _collaboratorsListStream: MutableStateFlow<List<GitCollaborator>> =
-        MutableStateFlow<List<GitCollaborator>>(
+        MutableStateFlow(
             emptyList()
         )
     val collaboratorsListStream: StateFlow<List<GitCollaborator>> = _collaboratorsListStream.asStateFlow()
