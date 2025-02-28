@@ -5,4 +5,7 @@
     <string name="no_internet_available">Internet nije dostupan!</string>
     <string name="whoops_something_went_wrong">Opa, nešto je pošlo po zlu i desilo se ono što nije trebalo - nešto se skršilo!</string>
     <string name="open">Otvori</string>
+    <string name="favorites">Favoriti</string>
+    <string name="repositories">Repozitorijumi</string>
+    <string name="contributors">Kontributori</string>
 </resources>

@@ -112,6 +112,10 @@ class FirstScreenViewModel @Inject constructor(
         }
     }
 
+    fun onGoToThirdScreenClicked() {
+        _navigationStream.value = FirstScreenNavigationEvent.THIRD_SCREEN
+    }
+
     private suspend fun refreshInnerStream() {
         gitReposRepository.getAllRepositoriesFiltered(filterCriteria)
             .collect { newList ->

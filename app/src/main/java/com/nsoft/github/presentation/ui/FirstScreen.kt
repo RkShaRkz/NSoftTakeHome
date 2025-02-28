@@ -2,11 +2,15 @@ package com.nsoft.github.presentation.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -17,10 +21,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.nsoft.github.R
@@ -55,16 +61,34 @@ fun FirstScreen(navController: NavHostController) {
     // And now, the UI code
     Column {
 
-        // The 'filter' input box
-        TextField(
-            value = filterText,
-            onValueChange = { newText ->
-                filterText = newText
-                presenter.setFilterCriteria(filterText)
-            },
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text(text = "Enter filter criteria") }
-        )
+        // The top of the screen - the filter input and the 'third screen' button
+        Row(
+            modifier = Modifier
+        ) {
+            // The 'filter' input box
+            TextField(
+                value = filterText,
+                onValueChange = { newText ->
+                    filterText = newText
+                    presenter.setFilterCriteria(filterText)
+                },
+                modifier = Modifier.fillMaxWidth(0.7f),
+                placeholder = { Text(text = "Enter filter criteria") }
+            )
+            // single vertical margin between them
+            Spacer(
+                modifier = Modifier.size(
+                    width = dimensionResource(R.dimen.margin_single),
+                    height = 0.dp
+                )
+            )
+
+            Button(
+                modifier = Modifier
+                    .align(Alignment.CenterVertically),
+                onClick = { presenter.onGoToThirdScreenClicked() }
+            ) { Text(text = "Favorites") }
+        }
 
         // The repos recyclerview
         GenericLazyColumnWithOverscroll(
@@ -130,6 +154,10 @@ private fun HandleNavigationEvents(
                     //TODO decide on this one later when you see how the app actually works out and whether this makes sense
 //                    popUpTo(NavigationRoutes.SECOND_SCREEN.getRouteName()) { inclusive = true }
                 }
+            }
+
+            FirstScreenNavigationEvent.THIRD_SCREEN -> {
+                navController.navigate(NavigationRoutes.THIRD_SCREEN.getRouteName())
             }
         }.exhaustive
         // And tell the presenter we're done navigating so it can clear the last navigation value
