@@ -10,6 +10,7 @@ import javax.inject.Named
  * so we'd need a way to differentiate the [ApiCall]s provided with a name.
  */
 object ApiCalls {
-    const val LIST_REPOS = "LIST_REPOS"
-    const val REPO_DETAILS = "REPO_DETAILS"
+    const val SEARCH_REPOSITORIES = "SEARCH_REPOSITORIES"
+    const val REPOSITORY_DETAILS = "REPOSITORY_DETAILS"
+    const val GET_COLLABORATORS = "GET_COLLABORATORS"
 }

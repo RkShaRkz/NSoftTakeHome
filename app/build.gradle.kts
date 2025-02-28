@@ -1,5 +1,7 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -14,7 +16,42 @@ jacoco {
     toolVersion = libs.versions.jacoco.get()
 }
 
+// Needed for explicit byte-buddy-agent declaration so that Mockito doesn't implicitly add it
+// because that throws warnings ...
+val mockitoAgent = configurations.create("mockitoAgent")
+
+
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("android/key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+} else {
+    //TODO fix this, since this *is* a problem for manually built release builds
+    // however I have zero plans of doing that, so it's kind of a non-issue at the moment
+    project.logger.warn("File not found: $keystorePropertiesFile")
+    project.logger.warn("Using default values for signing config.")
+    keystoreProperties["keyAlias"] = "default"
+    keystoreProperties["keyPassword"] = "password"
+    keystoreProperties["storeFile"] = file("default.jks")
+    keystoreProperties["storePassword"] = "storePassword"
+}
+
+
 android {
+    signingConfigs {
+        // "debug" already exists, so lets just do the "release" one
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile =
+                keystoreProperties["storeFile"]?.let {
+                    // It's already a file, so just return it
+                    return@let file(it)
+                }
+            storePassword = keystoreProperties["storePassword"] as String
+        }
+    }
+
     namespace = "com.nsoft.github"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
@@ -60,6 +97,9 @@ composeCompiler {
 
 // Turn on test logging in console for all tasks of type "test"
 tasks.withType<Test> {
+    jvmArgs = listOf(
+        "-javaagent:${mockitoAgent.asPath}"
+    )
 
     testLogging {
         // Set options for log level LIFECYCLE
@@ -154,10 +194,12 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     }
 
     classDirectories.setFrom(files(javaClasses, kotlinClasses))
-    sourceDirectories.setFrom(files(
-        project.fileTree("src/main/java"),
-        project.fileTree("src/main/kotlin")
-    ))
+    sourceDirectories.setFrom(
+        files(
+            project.fileTree("src/main/java"),
+            project.fileTree("src/main/kotlin")
+        )
+    )
 
     executionData.setFrom(
         fileTree(layout.buildDirectory.asFile) {
@@ -210,11 +252,23 @@ dependencies {
     // Timber
     implementation(libs.timber)
 
+    // Backported java.time features to lower APIs
+    implementation(libs.threetenabp)
+
+    // Image loading library coil-compose
+    implementation(libs.coil.compose)
+
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
     // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     testImplementation(libs.mockito.core)
+    mockitoAgent(libs.mockito.core) { isTransitive = false }
     testImplementation(libs.google.truth)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.core.testing)

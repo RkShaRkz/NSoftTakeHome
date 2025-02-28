@@ -1,0 +1,153 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  ANDROID_SDK_ROOT: '/home/circleci/android-sdk'
+  GRADLE_USER_HOME: '$CI_PROJECT_DIR/.gradle'
+  BUILDTOOLS_VERSION: "35.0.1"
+  KEYSTORE_PASSWORD: "android"
+  KEY_PASSWORD: "android"
+  KEY_ALIAS: "androiddebugkey"
+  KEYSTORE_FILENAME: "usethis.keystore"
+  KEYSTORE_BASE64: "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"
+
+
+# Setup caching, so that gradle caches it's stuff and not re-download and re-transform everything on every run
+cache:
+  key: $CI_COMMIT_REF_NAME
+  paths:
+    - .gradle/
+    - build/
+    - ~/.android/build-cache
+    - ~/.gradle/caches/
+  policy: pull-push
+
+
+test:
+  stage: test
+  image: 'cimg/android:2024.04'
+  script:
+    - git config --global --add safe.directory $CI_PROJECT_DIR
+    - export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator:$PATH"
+    - yes | sdkmanager --licenses || true
+    - sudo apt-get update && sudo apt-get install -y coreutils unzip || true
+    - if [ -f "gradlew" ]; then sudo chmod +x gradlew; fi
+    - './gradlew test --continue'
+  artifacts:
+    paths:
+      - 'app/build/reports/'
+    expire_in: 7 days
+
+buildDebug:
+  stage: build
+  image: 'cimg/android:2024.04'
+  script:
+    - git config --global --add safe.directory $CI_PROJECT_DIR
+    - export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator:$PATH"
+    - yes | sdkmanager --licenses || true
+    - sudo apt-get update && sudo apt-get install -y coreutils unzip || true
+    - if [ -f "gradlew" ]; then sudo chmod +x gradlew; fi
+    - './gradlew assembleDebug'
+    - find . -name "*.apk"  # Debugging: Verify APK file location
+  artifacts:
+    paths:
+      - '**/outputs/apk/debug/*.apk'
+    expire_in: 7 days
+  needs:
+    - test
+
+buildRelease:
+  stage: build
+  image: 'cimg/android:2024.04'
+  script:
+    - git config --global --add safe.directory $CI_PROJECT_DIR
+    - export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator:$PATH"
+    - yes | sdkmanager --licenses || true
+    - sudo apt-get update && sudo apt-get install -y coreutils unzip || true
+    - if [ -f "gradlew" ]; then sudo chmod +x gradlew; fi
+    - './gradlew assembleRelease'
+    - |
+      # de-Base64 the keystore
+      echo "$KEYSTORE_BASE64" | base64 --decode > $KEYSTORE_FILENAME
+      # sign the APK
+      jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore "$KEYSTORE_FILENAME" -storepass $KEYSTORE_PASSWORD -keypass $KEY_PASSWORD app/build/outputs/apk/release/app-release-unsigned.apk $KEY_ALIAS
+      # Now, we need to download the build-tools so we can use the zipalign
+      sdkmanager --licenses
+      sdkmanager "build-tools;${BUILDTOOLS_VERSION}"
+      # Verify that it's there
+      echo "List of SDK components:"
+      echo "$(sdkmanager --list)"
+      # DEBUG: Find the build-tools
+      #echo ""
+      #echo "Looking for build-tools ..."
+      #echo "$(find / -type d -name "build-tools")"
+      #echo ""
+      #echo "Listing $ANDROID_SDK_ROOT:"
+      #echo "$(ls -la $ANDROID_SDK_ROOT)"
+      #echo ""
+      #echo "Listing /home/circleci/android-sdk:"
+      #echo "$(ls -la /home/circleci/android-sdk)"
+      # Add to PATH
+      export PATH="$ANDROID_SDK_ROOT/build-tools/${BUILDTOOLS_VERSION}:$PATH"
+      # TODO: Align the APK
+      zipalign -p -f -v 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release.apk
+      # TODO: Verify alignment
+      zipalign -c -v 4 app/build/outputs/apk/release/app-release.apk
+      # Debugging: Verify APK file location
+    - find . -name "*.apk"
+  artifacts:
+    paths:
+      - '**/outputs/apk/release/*.apk'
+    expire_in: 7 days
+  needs:
+    - test
+
+deployDebug:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - apk add --no-cache git curl unzip
+    - git config --global --add safe.directory $CI_PROJECT_DIR
+    - git --version  # Debugging: Ensure Git is installed
+    - mkdir -p extracted_artifacts
+    - cp -r $(find . -type d -name "outputs") extracted_artifacts/  # Copy artifacts to extracted folder
+    - find extracted_artifacts -name "*.apk"  # Debugging: Confirm APK exists
+    - |
+      DEBUG_APK_PATH=$(find extracted_artifacts -name "*debug*.apk" | head -n 1)
+      PACKAGE_NAME='dental-link'
+      if [ -f "$DEBUG_APK_PATH" ]; then
+        echo "🚀 Uploading $DEBUG_APK_PATH to GitLab Package Registry..."
+        curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file "$DEBUG_APK_PATH" \
+        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$PACKAGE_NAME/1.0/app-debug.apk"
+      else
+        echo "❌ APK file not found! Deployment aborted."
+        exit 1
+      fi
+  needs:
+    - buildDebug
+
+deployRelease:
+  stage: deploy
+  image: alpine:latest
+  script:
+    - apk add --no-cache git curl unzip
+    - git config --global --add safe.directory $CI_PROJECT_DIR
+    - git --version  # Debugging: Ensure Git is installed
+    - mkdir -p extracted_artifacts
+    - cp -r $(find . -type d -name "outputs") extracted_artifacts/  # Copy artifacts to extracted folder
+    - find extracted_artifacts -name "*.apk"  # Debugging: Confirm APK exists
+    - |
+      RELEASE_APK_PATH=$(find extracted_artifacts -name "*release*.apk" | head -n 1)
+      PACKAGE_NAME='dental-link'
+      if [ -f "$RELEASE_APK_PATH" ]; then
+        echo "🚀 Uploading $RELEASE_APK_PATH to GitLab Package Registry..."
+        curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file "$RELEASE_APK_PATH" \
+        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$PACKAGE_NAME/1.0/app-release.apk"
+      else
+        echo "❌ APK file not found! Deployment aborted."
+        exit 1
+      fi
+  needs:
+    - buildRelease

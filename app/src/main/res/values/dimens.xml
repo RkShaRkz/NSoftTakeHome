@@ -15,5 +15,6 @@
     <dimen name="text_size_xlarge">18sp</dimen>
 
     <!-- for everything else, we will use the <WHERE>_<WHAT>_<WHICHSIZE> nomenclature -->
+    <dimen name="firstscreen_avatarsize">48dp</dimen>
 
 </resources>
